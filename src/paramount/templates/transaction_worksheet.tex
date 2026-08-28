@@ -1,0 +1,231 @@
+% !TEX program = xelatex
+\documentclass[10pt]{article}
+\usepackage[
+  paperwidth=612bp,
+  paperheight=792bp,
+  left=24mm,
+  right=24mm,
+  top=14mm,
+  bottom=14mm
+]{geometry}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{tabularx}
+
+% ================================================================
+% EDITABLE FIELDS
+% ================================================================
+
+% Header and brokerage
+\newcommand{\LogoPath}{../images/logo.png}
+\newcommand{\AgentName}{@@AGENTNAME@@}
+\newcommand{\BrokerageName}{@@BROKERAGENAME@@}
+\newcommand{\BrokerageAddress}{@@BROKERAGEADDRESS@@}
+\newcommand{\AgentPhone}{@@AGENTPHONE@@}
+\newcommand{\AgentEmail}{@@AGENTEMAIL@@}
+
+% Property
+\newcommand{\PropertyStreet}{@@PROPERTYSTREET@@}
+\newcommand{\CityStateZip}{@@CITYSTATEZIP@@}
+
+% Acceptance and deadlines
+\newcommand{\PurchasePrice}{@@PURCHASEPRICE@@}
+\newcommand{\DateAccepted}{@@DATEACCEPTED@@}
+\newcommand{\EarnestMoney}{@@EARNESTMONEY@@}
+\newcommand{\EarnestMoneyDueDate}{@@EARNESTMONEYDUEDATE@@}
+\newcommand{\InspectionDeadline}{@@INSPECTIONDEADLINE@@}
+\newcommand{\ClosingDate}{@@CLOSINGDATE@@}
+\newcommand{\PossessionDate}{@@POSSESSIONDATE@@}
+
+% Terms
+\newcommand{\Concessions}{@@CONCESSIONS@@}
+\newcommand{\Contingencies}{@@CONTINGENCIES@@}
+\newcommand{\HomeWarranty}{@@HOMEWARRANTY@@}
+\newcommand{\InclusionsExclusions}{@@INCLUSIONSEXCLUSIONS@@}
+
+% Buyer and seller
+\newcommand{\BuyerNames}{@@BUYERNAMES@@}
+\newcommand{\SellerNames}{@@SELLERNAMES@@}
+
+% Buyer's agent
+\newcommand{\BuyersAgentName}{@@BUYERSAGENTNAME@@}
+\newcommand{\BuyersAgentCompany}{@@BUYERSAGENTCOMPANY@@}
+\newcommand{\BuyersAgentPhone}{@@BUYERSAGENTPHONE@@}
+\newcommand{\BuyersAgentEmail}{@@BUYERSAGENTEMAIL@@}
+
+% Lender
+\newcommand{\LenderName}{@@LENDERNAME@@}
+\newcommand{\LenderCompany}{@@LENDERCOMPANY@@}
+\newcommand{\LenderPhone}{@@LENDERPHONE@@}
+\newcommand{\LenderEmail}{@@LENDEREMAIL@@}
+\newcommand{\LoanType}{@@LOANTYPE@@}
+
+% Escrow
+\newcommand{\EscrowContactName}{@@ESCROWCONTACTNAME@@}
+\newcommand{\EscrowCompany}{@@ESCROWCOMPANY@@}
+\newcommand{\EscrowPhone}{@@ESCROWPHONE@@}
+\newcommand{\EscrowEmail}{@@ESCROWEMAIL@@}
+
+% ================================================================
+% TYPOGRAPHY AND DESIGN
+% ================================================================
+
+\IfFileExists{/Applications/Microsoft Excel.app/Contents/Resources/DFonts/Aptos.ttf}{%
+  \newfontfamily\Aptos[
+    Path=/Applications/Microsoft Excel.app/Contents/Resources/DFonts/,
+    UprightFont=Aptos.ttf,
+    BoldFont=Aptos-Bold.ttf
+  ]{Aptos}
+  \newfontfamily\AptosNarrow[
+    Path=/Applications/Microsoft Excel.app/Contents/Resources/DFonts/,
+    UprightFont=Aptos-Narrow.ttf,
+    BoldFont=Aptos-Narrow-Bold.ttf
+  ]{Aptos Narrow}
+  \newfontfamily\AptosExtraBold[
+    Path=/Applications/Microsoft Excel.app/Contents/Resources/DFonts/,
+    UprightFont=Aptos-ExtraBold.ttf
+  ]{Aptos ExtraBold}
+}{%
+  \newfontfamily\Aptos{Arial}
+  \newfontfamily\AptosNarrow{Arial Narrow}
+  \newfontfamily\AptosExtraBold{Arial Black}
+}
+
+\definecolor{ParamountBlue}{RGB}{132,175,212}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\fboxsep}{0pt}
+\Aptos
+
+\newcommand{\SectionHeading}[1]{%
+  \par\addvspace{0.95\baselineskip}%
+  {\Aptos\bfseries\fontsize{12.5bp}{14.5bp}\selectfont #1\par}%
+  \vspace{1.2bp}%
+  {\color{ParamountBlue}\rule{\linewidth}{1.8bp}\par}%
+  \vspace{3.2bp}%
+}
+
+\newcommand{\FieldRow}[2]{%
+  \vspace{6bp}%
+  \noindent
+  \begin{tabularx}{\linewidth}{%
+    @{}>{\raggedright\arraybackslash\Aptos\fontsize{12bp}{18bp}\selectfont}X%
+    >{\raggedleft\arraybackslash\Aptos\fontsize{12bp}{18bp}\selectfont}p{0.37\linewidth}@{}%
+  }
+  #1 & #2
+  \end{tabularx}\par
+}
+
+\newcommand{\BodyLine}[1]{%
+  {\Aptos\fontsize{12bp}{18bp}\selectfont #1\par}%
+}
+
+\newcommand{\HeaderBlock}{%
+  \colorbox{ParamountBlue}{%
+    \begin{minipage}{\linewidth}
+      \vspace{8.5bp}
+      \hspace*{10.9bp}%
+      \begin{minipage}[c]{0.2\linewidth}
+        \centering
+        \includegraphics[width=105bp]{\LogoPath}
+      \end{minipage}%
+      \hfill
+      \begin{minipage}[c]{0.66\linewidth}
+        \color{white}
+        {\AptosExtraBold\fontsize{17bp}{19bp}\selectfont
+          \MakeUppercase{\AgentName}\par}
+        \vspace{3.5bp}
+        {\Aptos\bfseries\fontsize{10bp}{14bp}\selectfont
+          \MakeUppercase{\BrokerageName}\par
+          \BrokerageAddress\par
+          \AgentPhone\par
+          \MakeUppercase{\AgentEmail}\par}
+      \end{minipage}%
+      \hspace*{10.9bp}
+      \vspace{8.5bp}
+    \end{minipage}%
+  }%
+}
+
+\begin{document}
+
+\HeaderBlock
+
+\vspace{18bp}
+
+\begin{center}
+  {\Aptos\fontsize{15bp}{19bp}\selectfont
+    \PropertyStreet\par
+    \CityStateZip\par}
+\end{center}
+
+\vspace{7bp}
+
+\noindent
+\begin{minipage}[t]{0.45\textwidth}
+  \vspace{0pt}
+  \raggedright
+
+  \SectionHeading{ACCEPTANCE}
+  \FieldRow{PURCHASE PRICE}{\PurchasePrice}
+  \FieldRow{DATE ACCEPTED}{\DateAccepted}
+
+  \SectionHeading{DEADLINES}
+  \FieldRow{EARNEST MONEY}{\EarnestMoney}
+  \FieldRow{DUE DATE}{\EarnestMoneyDueDate}
+  \FieldRow{INSPECTION DEADLINE}{\InspectionDeadline}
+
+  \SectionHeading{CLOSING \& POSSESSION}
+  \FieldRow{CLOSING}{\ClosingDate}
+  \FieldRow{POSSESSION}{\PossessionDate}
+
+  \SectionHeading{CONCESSIONS}
+  \BodyLine{\Concessions}
+
+  \SectionHeading{CONTINGENCIES}
+  \BodyLine{\Contingencies}
+
+  \SectionHeading{HOME WARRANTY}
+  \BodyLine{\HomeWarranty}
+
+  \SectionHeading{INCLUSIONS \& EXCLUSIONS}
+  \BodyLine{\InclusionsExclusions}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+  \vspace{0pt}
+  \raggedright
+
+  \SectionHeading{BUYER INFORMATION}
+  \BodyLine{\BuyerNames}
+
+  \SectionHeading{SELLER INFORMATION}
+  \BodyLine{\SellerNames}
+
+  \SectionHeading{BUYERS AGENT}
+  \BodyLine{\BuyersAgentName}
+  \BodyLine{\BuyersAgentCompany}
+  \BodyLine{\BuyersAgentPhone}
+  \BodyLine{\BuyersAgentEmail}
+
+  \SectionHeading{LENDER OFFICE}
+  \BodyLine{\LenderName}
+  \BodyLine{\LenderCompany}
+  \BodyLine{\LenderPhone}
+  \BodyLine{\LenderEmail}
+  \BodyLine{Loan Type: \LoanType}
+
+  \SectionHeading{ESCROW COMPANY}
+  \BodyLine{\EscrowContactName}
+  \BodyLine{\EscrowCompany}
+  \BodyLine{\EscrowPhone}
+  \BodyLine{\EscrowEmail}
+
+\end{minipage}
+
+\end{document}

@@ -1,0 +1,17 @@
+[project]
+name = "paramount"
+version = "0.1.0"
+description = "Streamlined document generation"
+readme = "README.md"
+authors = [
+    { name = "Camden White", email = "camdenrenn@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[project.scripts]
+paramount = "paramount.main:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"

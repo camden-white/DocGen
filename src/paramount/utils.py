@@ -1,0 +1,202 @@
+import platform
+import shutil
+from pathlib import Path
+
+import subprocess
+import tempfile
+from pathlib import Path
+
+from paramount.config import LOGO_PATH, BROKERAGE_NAME, BROKERAGE_ADDRESS
+
+# ---
+import tkinter as tk
+
+def collapse_spaces(text: str, size:int = 1) -> str:
+    return (" "*size).join(text.split())
+
+def letterize(word: str) -> str:
+    return "".join([letter for letter in word if letter.isalpha()])
+
+def latex_placeholder(word: str) -> str:
+    return "@@" + letterize(word).upper() + "@@"
+
+def format_name(string: str) -> str:
+    formatted = collapse_spaces(string.title())
+    return formatted
+
+def format_paragraph(string: str) -> str:
+    formatted = collapse_spaces(string)
+    return formatted
+
+def format_email(string: str) -> str:
+    formatted = string.lower().replace(" ", "")
+    return formatted
+
+def digitize(string: str) -> str:
+    digits = [d for d in string if d.isdigit()]
+    return "".join(digits)
+
+def format_phone(string: str) -> str:
+    digits = digitize(string)
+    formatted = ""
+    if digits:
+        formatted = f"({digits[0:3]}) {digits[3:6]}-{digits[6:10]}"
+    return formatted
+
+def format_money(string: str) -> str:
+    digits = digitize(string)
+    formatted = ""
+    if digits:
+        formatted = r"$" + f"{int(digits):,}"
+    return formatted
+
+def format_date(string: str) -> str:
+    clean_string = string.replace("-", "/").replace(" ", "")
+    components = clean_string.split("/")
+    numeric_components = [digitize(c) for c in components]
+    formatted = "/".join(numeric_components)
+    return formatted
+
+def snap(event: tk.Event[tk.Entry], format_type: str) -> None:
+    entry = event.widget
+    raw = entry.get().strip()
+
+    if not raw:
+        return
+
+    if format_type == "phone":
+        formatted = format_phone(raw)
+    elif format_type == "email":
+        formatted = format_email(raw)
+    elif format_type == "money":
+        formatted = format_money(raw)
+    elif format_type == "name":
+        formatted = format_name(raw)
+    elif format_type == "date":
+        formatted = format_date(raw)
+    else:
+        formatted = format_paragraph(raw)
+
+    entry.delete(0, tk.END)
+    entry.insert(0, formatted)
+
+
+def open_pdf(pdf_path: Path) -> None:
+    system: str = platform.system()
+
+    if system == "Darwin":
+        subprocess.run(
+            ["open", str(pdf_path)], 
+            check=True
+        )
+
+    elif system == "Windows":
+        subprocess.run(
+            ["cmd", "/c", "start", "", str(pdf_path)],
+            check=True,
+        )
+
+    elif system == "Linux":
+        subprocess.run(
+            ["xdg-open", str(pdf_path)], 
+            check=True
+        )
+
+
+def escape_latex(value: str) -> str:
+    """Escape user-entered text before inserting it into LaTeX."""
+
+    replacements = (
+        ("\\", r"\textbackslash{}"),
+        ("&", r"\&"),
+        ("%", r"\%"),
+        ("$", r"\$"),
+        ("#", r"\#"),
+        ("_", r"\_"),
+        ("{", r"\{"),
+        ("}", r"\}"),
+        ("~", r"\textasciitilde{}"),
+        ("^", r"\textasciicircum{}"),
+    )
+    for source, replacement in replacements:
+        value = value.replace(source, replacement)
+    return value
+
+def find_xelatex() -> Path:
+    """Return a working XeLaTeX executable, including the macOS TeX Live path."""
+
+    discovered = shutil.which("xelatex")
+    if discovered:
+        return Path(discovered)
+
+    macos_texlive = Path("/Library/TeX/texbin/xelatex")
+    if macos_texlive.is_file():
+        return macos_texlive
+
+    raise FileNotFoundError(
+        "XeLaTeX was not found. Install MacTeX or add /Library/TeX/texbin "
+        "to the VS Code environment PATH."
+    )
+
+def render_latex(template: Path, data: dict[str, str]) -> str:
+    """Insert safe dynamic values into the LaTeX template."""
+
+    with open(template, "r", encoding="utf-8") as file:
+        latex_template = file.read()
+
+    latex_template = latex_template.replace("../images/logo.png", LOGO_PATH.as_posix())
+
+    data = {
+        "Brokerage Name": BROKERAGE_NAME,
+        "Brokerage Address": BROKERAGE_ADDRESS,
+    } | data
+
+    for key in data.keys():
+        latex_template = latex_template.replace(latex_placeholder(key), escape_latex(data[key]))
+
+    return latex_template
+
+def compile_pdf(latex_source: str, output_pdf: Path) -> None:
+    """Compile LaTeX in an isolated directory and copy out a verified PDF."""
+
+    xelatex = find_xelatex()
+    output_pdf = output_pdf.expanduser().resolve()
+    output_pdf.parent.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.TemporaryDirectory(prefix="transaction-worksheet-") as tmp:
+        build_dir = Path(tmp)
+        tex_path = build_dir / "document.tex"
+        tex_path.write_text(latex_source, encoding="utf-8")
+
+        command = [
+            str(xelatex),
+            "-interaction=nonstopmode",
+            "-halt-on-error",
+            "-file-line-error",
+            "document.tex",
+        ]
+        result = subprocess.run(
+            command,
+            cwd=build_dir,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        built_pdf = build_dir / "document.pdf"
+        if result.returncode != 0 or not built_pdf.is_file():
+            log_path = build_dir / "document.log"
+            log_text = (
+                log_path.read_text(encoding="utf-8", errors="replace")
+                if log_path.is_file()
+                else result.stdout
+            )
+            raise RuntimeError(
+                "XeLaTeX compilation failed. Final log lines:\n\n"
+                + "\n".join(log_text.splitlines()[-60:])
+            )
+
+        shutil.copy2(built_pdf, output_pdf)
+
+    if not output_pdf.is_file() or output_pdf.stat().st_size == 0:
+        raise RuntimeError(f"PDF verification failed: {output_pdf}")

@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Outputs
+output/
+
+# Company Data
+config.py
+images/
+
+# Archived
+arch/
+
+# References
+reference/
+
+# LaTeX generated files
+**/templates/*.aux
+**/templates/*.log
+**/templates/*.pdf
+**/templates/*.gz
