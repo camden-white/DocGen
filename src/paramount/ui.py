@@ -65,12 +65,12 @@ def window(title: str = "", fields: tuple[tuple[str,str], ...] = (), dropdowns: 
                 pady=8,
             )
 
-            entries[field] = entry
-
-            entries[field].bind(
+            entry.bind(
                 "<FocusOut>",
                 partial(snap, format_type=format_type),
             )
+
+            entries[field] = entry
 
         ttk.Label(
             form,

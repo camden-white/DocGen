@@ -1,15 +1,12 @@
 import platform
 import shutil
 from pathlib import Path
-
 import subprocess
 import tempfile
-from pathlib import Path
+import tkinter as tk
+from tkinter import ttk
 
 from paramount.config import LOGO_PATH, BROKERAGE_NAME, BROKERAGE_ADDRESS
-
-# ---
-import tkinter as tk
 
 def collapse_spaces(text: str, size:int = 1) -> str:
     return (" "*size).join(text.split())
@@ -19,14 +16,6 @@ def letterize(word: str) -> str:
 
 def latex_placeholder(word: str) -> str:
     return "@@" + letterize(word).upper() + "@@"
-
-def format_name(string: str) -> str:
-    formatted = collapse_spaces(string.title())
-    return formatted
-
-def format_paragraph(string: str) -> str:
-    formatted = collapse_spaces(string)
-    return formatted
 
 def format_email(string: str) -> str:
     formatted = string.lower().replace(" ", "")
@@ -57,7 +46,15 @@ def format_date(string: str) -> str:
     formatted = "/".join(numeric_components)
     return formatted
 
-def snap(event: tk.Event[tk.Entry], format_type: str) -> None:
+def format_plain(string: str) -> str:
+    formatted = collapse_spaces(string)
+    return formatted
+
+# def format_name(string: str) -> str:
+#     formatted = collapse_spaces(string.title())
+#     return formatted
+
+def snap(event: tk.Event[ttk.Entry], format_type: str) -> None:
     entry = event.widget
     raw = entry.get().strip()
 
@@ -70,12 +67,12 @@ def snap(event: tk.Event[tk.Entry], format_type: str) -> None:
         formatted = format_email(raw)
     elif format_type == "money":
         formatted = format_money(raw)
-    elif format_type == "name":
-        formatted = format_name(raw)
     elif format_type == "date":
         formatted = format_date(raw)
+    elif format_type.startswith("plain"):
+        formatted = format_plain(raw)
     else:
-        formatted = format_paragraph(raw)
+        formatted = format_plain(raw)
 
     entry.delete(0, tk.END)
     entry.insert(0, formatted)

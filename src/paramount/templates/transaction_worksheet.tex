@@ -13,6 +13,11 @@
 \usepackage{xcolor}
 \usepackage{array}
 \usepackage{tabularx}
+\usepackage{etoolbox}
+
+\newcommand{\default}[2]{%
+  \ifdefempty{#1}{#2}{#1}%
+}
 
 % ================================================================
 % EDITABLE FIELDS
@@ -104,7 +109,7 @@
 \newcommand{\SectionHeading}[1]{%
   \par\addvspace{0.95\baselineskip}%
   {\Aptos\bfseries\fontsize{12.5bp}{14.5bp}\selectfont #1\par}%
-  \vspace{1.2bp}%
+  % \vspace{1.2bp}%
   {\color{ParamountBlue}\rule{\linewidth}{1.8bp}\par}%
   \vspace{3.2bp}%
 }
@@ -187,13 +192,13 @@
   \BodyLine{\Concessions}
 
   \SectionHeading{CONTINGENCIES}
-  \BodyLine{\Contingencies}
+  \BodyLine{\default{\Contingencies}{None}}
 
   \SectionHeading{HOME WARRANTY}
-  \BodyLine{\HomeWarranty}
+  \BodyLine{\default{\HomeWarranty}{None}}
 
   \SectionHeading{INCLUSIONS \& EXCLUSIONS}
-  \BodyLine{\InclusionsExclusions}
+  \BodyLine{\default{\InclusionsExclusions}{None}}
 
 \end{minipage}%
 \hfill
