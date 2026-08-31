@@ -4,7 +4,7 @@ from functools import partial
 
 from paramount.utils import snap
 
-def window(title: str = "", fields: tuple[tuple[str,str], ...] = (), dropdowns: dict[str, tuple[str, ...]] = {}, size: tuple[float, float] = (0.6, 0.8)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
+def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str] = {}, dropdowns: dict[str, tuple[str, ...]] = {}, size: tuple[float, float] = (0.6, 0.8)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
     root = tk.Tk()
     root.title(title)
     style = ttk.Style(root)
@@ -24,7 +24,7 @@ def window(title: str = "", fields: tuple[tuple[str,str], ...] = (), dropdowns: 
 
     half = (len(fields) + 1) // 2
 
-    for i, (field, format_type) in enumerate(fields):
+    for i, field in enumerate(fields):
         if i < half:
             row = i
             label_col = 0
@@ -67,7 +67,7 @@ def window(title: str = "", fields: tuple[tuple[str,str], ...] = (), dropdowns: 
 
             entry.bind(
                 "<FocusOut>",
-                partial(snap, format_type=format_type),
+                partial(snap, format_type=formats.get(field)),
             )
 
             entries[field] = entry
