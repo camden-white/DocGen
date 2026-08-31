@@ -8,14 +8,17 @@ from tkinter import ttk
 
 from paramount.config import LOGO_PATH, BROKERAGE_NAME, BROKERAGE_ADDRESS
 
-def collapse_spaces(text: str, size:int = 1) -> str:
-    return (" "*size).join(text.split())
+def collapse_spaces(string: str) -> str:
+    return (" ").join(string.split())
 
-def letterize(word: str) -> str:
-    return "".join([letter for letter in word if letter.isalpha()])
+def letterize(string: str, spaces: bool = False) -> str:
+    letters = [letter for letter in string if letter.isalpha() or spaces and letter.isspace()]
+    formatted = "".join(letters)
+    return formatted
 
-def latex_placeholder(word: str) -> str:
-    return "@@" + letterize(word).upper() + "@@"
+def latex_placeholder(string: str, delimiter: str = "@@") -> str:
+    formatted = delimiter + letterize(string).upper() + delimiter
+    return formatted
 
 def format_email(string: str) -> str:
     formatted = string.lower().replace(" ", "")
@@ -46,22 +49,26 @@ def format_date(string: str) -> str:
     formatted = "/".join(numeric_components)
     return formatted
 
+def format_name(string: str) -> str:
+    formatted = collapse_spaces(letterize(string, spaces=True))
+    return formatted
+
 def format_plain(string: str) -> str:
     formatted = collapse_spaces(string)
     return formatted
 
-# def format_name(string: str) -> str:
-#     formatted = collapse_spaces(string.title())
-#     return formatted
-
-def snap(event: tk.Event[ttk.Entry], format_type: str) -> None:
+def snap(event: tk.Event[ttk.Entry], format_type: str | None) -> None:
     entry = event.widget
     raw = entry.get().strip()
 
     if not raw:
         return
 
-    if format_type == "phone":
+    if format_type is None:
+        formatted = format_plain(raw)
+    elif format_type == "name":
+        formatted = format_name(raw)
+    elif format_type == "phone":
         formatted = format_phone(raw)
     elif format_type == "email":
         formatted = format_email(raw)
@@ -69,10 +76,8 @@ def snap(event: tk.Event[ttk.Entry], format_type: str) -> None:
         formatted = format_money(raw)
     elif format_type == "date":
         formatted = format_date(raw)
-    elif format_type.startswith("plain"):
-        formatted = format_plain(raw)
     else:
-        formatted = format_plain(raw)
+        raise ValueError(f"Unrecognized format type for {entry}")
 
     entry.delete(0, tk.END)
     entry.insert(0, formatted)
