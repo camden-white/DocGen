@@ -48,17 +48,19 @@
 \newcommand{\Concessions}{@@CONCESSIONS@@}
 \newcommand{\Contingencies}{@@CONTINGENCIES@@}
 \newcommand{\HomeWarranty}{@@HOMEWARRANTY@@}
-\newcommand{\InclusionsExclusions}{@@INCLUSIONSEXCLUSIONS@@}
+\newcommand{\Inclusions}{@@INCLUSIONS@@}
+\newcommand{\Exclusions}{@@EXCLUSIONS@@}
 
 % Buyer and seller
+\newcommand{\CounterpartyType}{@@COUNTERPARTYTYPE@@}
 \newcommand{\BuyerNames}{@@BUYERNAMES@@}
 \newcommand{\SellerNames}{@@SELLERNAMES@@}
 
-% Buyer's agent
-\newcommand{\BuyersAgentName}{@@BUYERSAGENTNAME@@}
-\newcommand{\BuyersAgentCompany}{@@BUYERSAGENTCOMPANY@@}
-\newcommand{\BuyersAgentPhone}{@@BUYERSAGENTPHONE@@}
-\newcommand{\BuyersAgentEmail}{@@BUYERSAGENTEMAIL@@}
+% Counterparty Agent
+\newcommand{\CounterpartyAgentName}{@@COUNTERPARTYAGENTNAME@@}
+\newcommand{\CounterpartyAgentCompany}{@@COUNTERPARTYAGENTCOMPANY@@}
+\newcommand{\CounterpartyAgentPhone}{@@COUNTERPARTYAGENTPHONE@@}
+\newcommand{\CounterpartyAgentEmail}{@@COUNTERPARTYAGENTEMAIL@@}
 
 % Lender
 \newcommand{\LenderName}{@@LENDERNAME@@}
@@ -108,7 +110,7 @@
 
 \newcommand{\SectionHeading}[1]{%
   \par\addvspace{0.95\baselineskip}%
-  {\Aptos\bfseries\fontsize{12.5bp}{14.5bp}\selectfont #1\par}%
+  {\Aptos\bfseries\fontsize{12.5bp}{14.5bp}\selectfont\MakeUppercase{#1}\par}%
   % \vspace{1.2bp}%
   {\color{ParamountBlue}\rule{\linewidth}{1.8bp}\par}%
   \vspace{3.2bp}%
@@ -121,7 +123,7 @@
     @{}>{\raggedright\arraybackslash\Aptos\fontsize{12bp}{18bp}\selectfont}X%
     >{\raggedleft\arraybackslash\Aptos\fontsize{12bp}{18bp}\selectfont}p{0.37\linewidth}@{}%
   }
-  #1 & #2
+  \MakeUppercase{#1} & #2
   \end{tabularx}\par
 }
 
@@ -175,30 +177,33 @@
   \vspace{0pt}
   \raggedright
 
-  \SectionHeading{ACCEPTANCE}
-  \FieldRow{PURCHASE PRICE}{\PurchasePrice}
-  \FieldRow{DATE ACCEPTED}{\DateAccepted}
+  \SectionHeading{Acceptance}
+  \FieldRow{Purchase Price}{\PurchasePrice}
+  \FieldRow{Date Accepted}{\DateAccepted}
 
-  \SectionHeading{DEADLINES}
-  \FieldRow{EARNEST MONEY}{\EarnestMoney}
-  \FieldRow{DUE DATE}{\EarnestMoneyDueDate}
-  \FieldRow{INSPECTION DEADLINE}{\InspectionDeadline}
+  \SectionHeading{Deadlines}
+  \FieldRow{Earnest Money}{\EarnestMoney}
+  \FieldRow{Due Date}{\EarnestMoneyDueDate}
+  \FieldRow{Inspection Deadline}{\InspectionDeadline}
 
   \SectionHeading{CLOSING \& POSSESSION}
-  \FieldRow{CLOSING}{\ClosingDate}
-  \FieldRow{POSSESSION}{\PossessionDate}
+  \FieldRow{Closing}{\ClosingDate}
+  \FieldRow{Possession}{\PossessionDate}
 
-  \SectionHeading{CONCESSIONS}
-  \BodyLine{\Concessions}
+  \SectionHeading{Concessions}
+  \BodyLine{\default{\Concessions}{None}}
 
-  \SectionHeading{CONTINGENCIES}
+  \SectionHeading{Contingencies}
   \BodyLine{\default{\Contingencies}{None}}
 
-  \SectionHeading{HOME WARRANTY}
+  \SectionHeading{Home Warranty}
   \BodyLine{\default{\HomeWarranty}{None}}
 
-  \SectionHeading{INCLUSIONS \& EXCLUSIONS}
-  \BodyLine{\default{\InclusionsExclusions}{None}}
+  \SectionHeading{Inclusions \& Exclusions}
+  \BodyLine{
+    Inclusions: \default{\Inclusions}{None}\\
+    Exclusions: \default{\Exclusions}{None}
+  }
 
 \end{minipage}%
 \hfill
@@ -206,26 +211,26 @@
   \vspace{0pt}
   \raggedright
 
-  \SectionHeading{BUYER INFORMATION}
-  \BodyLine{\BuyerNames}
+  \SectionHeading{Buyer Information}
+  \BodyLine{\default{\BuyerNames}{None}}
 
-  \SectionHeading{SELLER INFORMATION}
-  \BodyLine{\SellerNames}
+  \SectionHeading{Seller Information}
+  \BodyLine{\default{\SellerNames}{None}}
 
-  \SectionHeading{BUYERS AGENT}
-  \BodyLine{\BuyersAgentName}
-  \BodyLine{\BuyersAgentCompany}
-  \BodyLine{\BuyersAgentPhone}
-  \BodyLine{\BuyersAgentEmail}
+  \SectionHeading{\CounterpartyType's Agent}
+  \BodyLine{\CounterpartyAgentName}
+  \BodyLine{\CounterpartyAgentCompany}
+  \BodyLine{\CounterpartyAgentName}
+  \BodyLine{\CounterpartyAgentEmail}
 
-  \SectionHeading{LENDER OFFICE}
+  \SectionHeading{Lender Office}
   \BodyLine{\LenderName}
   \BodyLine{\LenderCompany}
   \BodyLine{\LenderPhone}
   \BodyLine{\LenderEmail}
-  \BodyLine{Loan Type: \LoanType}
+  \BodyLine{Loan Type: \default{\LoanType}{None}}
 
-  \SectionHeading{ESCROW COMPANY}
+  \SectionHeading{Escrow Company}
   \BodyLine{\EscrowContactName}
   \BodyLine{\EscrowCompany}
   \BodyLine{\EscrowPhone}
