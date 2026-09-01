@@ -1,15 +1,35 @@
-.PHONY: init install generate
+.PHONY: init install run
 
-init: config.py install generate
+PKG := src/docgen
+IMAGES := $(PKG)/images
+TEMPLATES := $(PKG)/templates
+DOCUMENTS := $(PKG)/documents
+EXAMPLES := $(PKG)/examples
 
-config.py:
-	cp config.example.py config.py
+init: \
+    $(PKG)/config.py \
+    $(IMAGES)/logo.png \
+    $(TEMPLATES)/document.tex \
+    $(DOCUMENTS)/document.py \
+    install
+
+$(PKG)/config.py:
+	cp $(EXAMPLES)/config.example.py $@
+
+$(IMAGES)/logo.png:
+	mkdir -p $(@D)
+	cp $(EXAMPLES)/logo.example.png $@
+
+$(TEMPLATES)/example.tex:
+	mkdir -p $(@D)
+	cp $(EXAMPLES)/template.example.tex $@
+
+$(DOCUMENTS)/example.py:
+	mkdir -p $(@D)
+	cp $(EXAMPLES)/document.example.py $@
 
 install:
 	uv sync
-
-generate:
-	uv run python scripts/generate_files.py
 
 run:
 	uv run docgen
