@@ -8,7 +8,7 @@
 ![XeLaTeX](https://img.shields.io/badge/Typesetting-XeLaTeX-008080?logo=latex&logoColor=white)
 ![uv](https://img.shields.io/badge/Package%20Manager-uv-DE5FE9?logo=uv&logoColor=white)
 ![GNU Make](https://img.shields.io/badge/Build-GNU%20Make-A42E2B?logo=gnu&logoColor=white)
-[![License](https://img.shields.io/badge/License-Apache%202.0-9f90d1?logo=apache&logoColor=white)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-white?logo=apache&logoColor=white)](LICENSE)
 ![Status](https://img.shields.io/badge/Status-Active%20Development-2DA44E?logo=github&logoColor=white)
 <!-- ![Ruff](https://img.shields.io/badge/Lint-Ruff-D7FF64?logo=ruff&logoColor=black)
 ![mypy](https://img.shields.io/badge/Types-mypy-2A6DB2)
