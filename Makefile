@@ -1,4 +1,4 @@
 .PHONY: run
 
 run:
-	uv run paramount
+	uv run docgen

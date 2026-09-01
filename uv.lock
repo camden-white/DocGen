@@ -8,6 +8,6 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "paramount"
-version = "0.1.0"
+name = "docgen"
+version = "0.2.0"
 source = { editable = "." }

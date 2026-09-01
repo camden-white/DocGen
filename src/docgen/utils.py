@@ -6,7 +6,7 @@ import tempfile
 import tkinter as tk
 from tkinter import ttk
 
-from paramount.config import LOGO_PATH, BROKERAGE_NAME, BROKERAGE_ADDRESS
+from docgen.config import LOGO_PATH, BROKERAGE_NAME, BROKERAGE_ADDRESS
 
 def collapse_spaces(string: str) -> str:
     return (" ").join(string.split())

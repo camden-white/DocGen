@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from functools import partial
 
-from paramount.utils import snap
+from docgen.utils import snap
 
 def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str] = {}, dropdowns: dict[str, tuple[str, ...]] = {}, cols: int = 2, size: tuple[float, float] = (0.6, 0.9)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
     root = tk.Tk()

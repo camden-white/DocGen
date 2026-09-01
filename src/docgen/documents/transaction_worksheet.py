@@ -1,12 +1,10 @@
 """Generate the transaction worksheet with XeLaTeX."""
 
-from pathlib import Path
 from tkinter import ttk
-import argparse
 
-from paramount.config import TEMPLATE_DIR, OUTPUT_DIR, AGENTS
-from paramount.utils import open_pdf, render_latex, compile_pdf
-from paramount.ui import window
+from docgen.config import TEMPLATE_DIR, OUTPUT_DIR, AGENTS
+from docgen.utils import open_pdf, render_latex, compile_pdf
+from docgen.ui import window
 
 TEMPLATE_PATH = TEMPLATE_DIR / "transaction_worksheet.tex"
 OUTPUT_PATH = OUTPUT_DIR / "TransactionWorksheet.pdf"
@@ -74,21 +72,6 @@ DROPDOWNS: dict[str, tuple[str, ...]] = {
     "Agent Name": tuple(AGENTS.keys()),
     "Client Type": ("Buyer", "Seller"),
 }
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--logo",
-        type=Path,
-        help="Optional explicit path to logo.png.",
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=OUTPUT_PATH,
-        help=f"Output PDF path (default: {OUTPUT_PATH}).",
-    )
-    return parser.parse_args()
 
 def main() -> None:
 

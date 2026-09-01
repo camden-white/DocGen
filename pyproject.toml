@@ -1,6 +1,6 @@
 [project]
-name = "paramount"
-version = "0.1.0"
+name = "docgen"
+version = "0.2.0"
 description = "Streamlined document generation"
 readme = "README.md"
 authors = [
@@ -10,7 +10,7 @@ requires-python = ">=3.14"
 dependencies = []
 
 [project.scripts]
-paramount = "paramount.main:main"
+docgen = "docgen.main:main"
 
 [build-system]
 requires = ["uv_build>=0.12.3,<0.13.0"]

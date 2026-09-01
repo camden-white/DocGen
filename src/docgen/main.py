@@ -1,9 +1,9 @@
-"""Paramount document program"""
+"""DocGen program"""
 
 from tkinter import ttk
 
-from paramount.ui import window
-from paramount.documents.transaction_worksheet import main as transaction_worksheet
+from docgen.ui import window
+from docgen.documents.transaction_worksheet import main as transaction_worksheet
 
 def main() -> None:
 
