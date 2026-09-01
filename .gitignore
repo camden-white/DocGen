@@ -16,14 +16,14 @@ output/
 config.py
 images/
 
-# Archived
-arch/
+# Specific Document Frameworks
+documents/
 
-# References
-reference/
+# Templates
+templates/
 
 # LaTeX generated files
-**/templates/*.aux
-**/templates/*.log
-**/templates/*.pdf
-**/templates/*.gz
+**/*.aux
+**/*.log
+**/*.pdf
+**/*.gz
