@@ -51,10 +51,15 @@
 \newcommand{\Inclusions}{@@INCLUSIONS@@}
 \newcommand{\Exclusions}{@@EXCLUSIONS@@}
 
-% Buyer and seller
+% Client
+\newcommand{\ClientType}{@@CLIENTTYPE@@}
+\newcommand{\ClientNames}{@@CLIENTNAMES@@}
+\newcommand{\ClientPhone}{@@CLIENTPHONE@@}
+\newcommand{\ClientEmail}{@@CLIENTEMAIL@@}
+
+% Counterparty
 \newcommand{\CounterpartyType}{@@COUNTERPARTYTYPE@@}
-\newcommand{\BuyerNames}{@@BUYERNAMES@@}
-\newcommand{\SellerNames}{@@SELLERNAMES@@}
+\newcommand{\CounterpartyNames}{@@COUNTERPARTYNAMES@@}
 
 % Counterparty Agent
 \newcommand{\CounterpartyAgentName}{@@COUNTERPARTYAGENTNAME@@}
@@ -211,16 +216,18 @@
   \vspace{0pt}
   \raggedright
 
-  \SectionHeading{Buyer Information}
-  \BodyLine{\default{\BuyerNames}{None}}
+  \SectionHeading{\ClientType\ Information}
+  \BodyLine{\ClientNames}
+  \BodyLine{\ClientPhone}
+  \BodyLine{\ClientEmail}
 
-  \SectionHeading{Seller Information}
-  \BodyLine{\default{\SellerNames}{None}}
+  \SectionHeading{\CounterpartyType\ Information}
+  \BodyLine{\CounterpartyNames}
 
   \SectionHeading{\CounterpartyType's Agent}
   \BodyLine{\CounterpartyAgentName}
   \BodyLine{\CounterpartyAgentCompany}
-  \BodyLine{\CounterpartyAgentName}
+  \BodyLine{\CounterpartyAgentPhone}
   \BodyLine{\CounterpartyAgentEmail}
 
   \SectionHeading{Lender Office}

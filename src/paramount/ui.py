@@ -4,7 +4,7 @@ from functools import partial
 
 from paramount.utils import snap
 
-def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str] = {}, dropdowns: dict[str, tuple[str, ...]] = {}, size: tuple[float, float] = (0.6, 0.8)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
+def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str] = {}, dropdowns: dict[str, tuple[str, ...]] = {}, cols: int = 2, size: tuple[float, float] = (0.6, 0.9)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
     root = tk.Tk()
     root.title(title)
     style = ttk.Style(root)
@@ -22,17 +22,13 @@ def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str
 
     entries: dict[str, ttk.Entry | ttk.Combobox] = {}
 
-    half = (len(fields) + 1) // 2
+    max_row = (len(fields) + 1) // cols
 
     for i, field in enumerate(fields):
-        if i < half:
-            row = i
-            label_col = 0
-            entry_col = 1
-        else:
-            row = i - half
-            label_col = 2
-            entry_col = 3
+        col = i // max_row
+        row = i % max_row
+        label_col = 2 * col
+        entry_col = label_col + 1
 
         if field in dropdowns.keys():
             combobox = ttk.Combobox(
@@ -41,7 +37,6 @@ def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str
                 state="readonly",
                 width=30,
             )
-
             combobox.grid(
                 row=row,
                 column=entry_col,
@@ -64,7 +59,6 @@ def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str
                 padx=(0, 25),
                 pady=8,
             )
-
             entry.bind(
                 "<FocusOut>",
                 partial(snap, format_type=formats.get(field)),
