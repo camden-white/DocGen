@@ -4,7 +4,8 @@ from tkinter import ttk
 
 from docgen.utils import snap
 
-def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str] = {}, dropdowns: dict[str, tuple[str, ...]] = {}, cols: int = 2, size: tuple[float, float] = (0.6, 0.9)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
+def window(title: str = "", size: tuple[float, float] = (0.6, 0.9)) -> tk.Tk:
+
     root = tk.Tk()
     root.title(title)
     style = ttk.Style(root)
@@ -17,8 +18,20 @@ def window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str
     height = int(screen_height * rel_height)
     root.geometry(f"{width}x{height}")
 
+    return root
+
+def form_window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str] = {}, dropdowns: dict[str, tuple[str, ...]] = {}, cols: int = 2, size: tuple[float, float] = (0.6, 0.9)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
+
+    root = window(
+        title=title,
+        size=size,
+    )
+
     form = ttk.Frame(root)
     form.pack(padx=30, pady=30, fill="both", expand=True)
+
+    form.columnconfigure(1, weight=1)
+    form.columnconfigure(3, weight=1)
 
     entries: dict[str, ttk.Entry | ttk.Combobox] = {}
 
