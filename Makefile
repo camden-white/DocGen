@@ -9,8 +9,8 @@ EXAMPLES := $(PKG)/examples
 init: \
     $(PKG)/config.py \
     $(IMAGES)/logo.png \
-    $(TEMPLATES)/document.tex \
-    $(DOCUMENTS)/document.py \
+    $(TEMPLATES)/example.tex \
+    $(DOCUMENTS)/example.py \
     install
 
 $(PKG)/config.py:
