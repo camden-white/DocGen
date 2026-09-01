@@ -4,10 +4,12 @@ from tkinter import ttk
 
 from docgen.config import COMPANY_NAME, COMPANY_ADDRESS, TEMPLATE_DIR, OUTPUT_DIR, AGENTS
 from docgen.utils import open_pdf, render_latex, compile_pdf
-from docgen.ui import window
+from docgen.ui import form_window
 
-TEMPLATE_PATH = TEMPLATE_DIR / "transaction_worksheet.tex"
-OUTPUT_PATH = OUTPUT_DIR / "TransactionWorksheet.pdf"
+DISPLAY_NAME = "Document"
+
+TEMPLATE_PATH = TEMPLATE_DIR / "document.tex"
+OUTPUT_PATH = OUTPUT_DIR / "Document.pdf"
 
 FIELDS: tuple[str, ...] = (
     "Agent Name",
@@ -75,7 +77,7 @@ DROPDOWNS: dict[str, tuple[str, ...]] = {
 
 def main() -> None:
 
-    root, entries = window(
+    root, entries = form_window(
         title="Transaction Worksheet",
         fields=FIELDS,
         formats=FORMATS,
