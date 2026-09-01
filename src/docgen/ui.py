@@ -1,6 +1,6 @@
+from functools import partial
 import tkinter as tk
 from tkinter import ttk
-from functools import partial
 
 from docgen.utils import snap
 

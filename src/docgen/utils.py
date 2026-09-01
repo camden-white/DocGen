@@ -1,12 +1,12 @@
 import platform
-import shutil
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import tkinter as tk
 from tkinter import ttk
 
-from docgen.config import LOGO_PATH, BROKERAGE_NAME, BROKERAGE_ADDRESS
+from docgen.config import LOGO_PATH
 
 def collapse_spaces(string: str) -> str:
     return (" ").join(string.split())
@@ -147,11 +147,6 @@ def render_latex(template: Path, data: dict[str, str]) -> str:
         latex_template = file.read()
 
     latex_template = latex_template.replace("../images/logo.png", LOGO_PATH.as_posix())
-
-    data = {
-        "Brokerage Name": BROKERAGE_NAME,
-        "Brokerage Address": BROKERAGE_ADDRESS,
-    } | data
 
     for key in data.keys():
         latex_template = latex_template.replace(latex_placeholder(key), escape_latex(data[key]))

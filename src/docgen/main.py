@@ -8,7 +8,7 @@ from docgen.documents.transaction_worksheet import main as transaction_worksheet
 def main() -> None:
 
     root, _ = window(
-        title="Document Generator",
+        title="DocGen",
         size=(0.5,0.5),
     )
 

@@ -2,7 +2,7 @@
 
 from tkinter import ttk
 
-from docgen.config import TEMPLATE_DIR, OUTPUT_DIR, AGENTS
+from docgen.config import COMPANY_NAME, COMPANY_ADDRESS, TEMPLATE_DIR, OUTPUT_DIR, AGENTS
 from docgen.utils import open_pdf, render_latex, compile_pdf
 from docgen.ui import window
 
@@ -89,6 +89,8 @@ def main() -> None:
         counterparty_type = "Buyer" if entered_data["Client Type"] == "Seller" else "Seller"
 
         implied_data: dict[str, str] = {
+            "Brokerage Name": COMPANY_NAME,
+            "Brokerage Address": COMPANY_ADDRESS,
             "Agent Phone": AGENTS[agent_name]["phone"],
             "Agent Email": AGENTS[agent_name]["email"],
             "Counterparty Type": counterparty_type,
