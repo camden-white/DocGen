@@ -5,6 +5,7 @@ IMAGES := $(PKG)/images
 TEMPLATES := $(PKG)/templates
 DOCUMENTS := $(PKG)/documents
 EXAMPLES := $(PKG)/examples
+APP := DocGen
 
 init: \
     $(PKG)/config.py \
@@ -33,3 +34,19 @@ install:
 
 run:
 	uv run docgen
+
+build:
+	uv run pyinstaller \
+		--name $(APP) \
+		--windowed \
+		--onefile \
+		--add-data "$(IMAGES):docgen/images" \
+		--add-data "$(TEMPLATES):docgen/templates" \
+		--collect-submodules docgen.documents \
+		$(PKG)/main.py
+
+run-build:
+	./dist/$(APP)
+
+clean-build:
+	rm -rf build dist $(APP).spec
