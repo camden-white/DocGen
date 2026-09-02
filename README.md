@@ -195,33 +195,46 @@ Useful development commands can be exposed through the Makefile:
 
 ```bash
 make init
+make build
 make run
-make format
-make lint
-make typecheck
-make test
 ```
 
-This keeps common development and setup tasks consistent across environments.
+Development workflow:
+
+```bash
+uv version --bump patch
+git add .
+git commit -m "Release v1.0.9"
+git tag v1.0.9
+git push
+git push origin v1.0.9
+```
 
 ## Requirements
 
-- Python 3
+- Python 3.14
 - Tkinter
 - A supported PDF generation/editing library
 - macOS or Windows
 
 Tkinter is included with many standard Python installations, although availability depends on how Python was installed.
 
-## Goals
+## Roadmap
 
-DocGen is intended to remain:
+### Phase 1: Workable Application
+- [x] Tkinter GUI to effectively generate a PDF
+- [x] Windows application
+- [x] macOS application
 
-- **Simple** — nontechnical users should be able to generate documents easily.
-- **Extensible** — new document templates should be straightforward to add.
-- **Reusable** — business-specific data should remain separate from the core application.
-- **Local** — document generation should not require a hosted service.
-- **Maintainable** — document-specific logic should remain modular as the project grows.
+### Phase 2: Replace File Management with UI
+- [ ] GUI for editing config.toml
+- [ ] Move config.toml and logo.png to Applicaiton Support so that translocated app can still run and files are not seen
+- [ ] UI for adding and editing templates with LaTeX (each template has a "generate" and "edit" button)
+
+### Phase 3: Version Updates and Improvements
+- [ ] Perfect snap-formatting (dates, emails, etc.)
+- [ ] Make config.toml -> config.py -> document.py -> template.tex variable pipeline non-dependent on precise naming conventions so that new data can be easily added
+- [ ] Allow config.toml to add arbitrary data that is processed by config.py and allowed in future templates
 
 ## License
 
