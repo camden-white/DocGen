@@ -9,7 +9,20 @@ TEMPLATE_DIR = PACKAGE_DIR / "templates"
 ASSET_DIR = PACKAGE_DIR / "assets"
 
 FROZEN = getattr(sys, "frozen", False)
-APP_DIR = Path(sys.executable).resolve().parent if FROZEN else PACKAGE_DIR
+
+if FROZEN:
+    executable = Path(sys.executable).resolve()
+
+    app_bundle = next(
+        (parent for parent in executable.parents if parent.suffix == ".app"),
+        None,
+    )
+
+    APP_DIR = app_bundle.parent if app_bundle else executable.parent
+else:
+    APP_DIR = PACKAGE_DIR
+
+# APP_DIR = Path(sys.executable).resolve().parent if FROZEN else PACKAGE_DIR
 
 CONFIG_PATH = APP_DIR / "config.toml"
 LOGO_PATH = APP_DIR / "logo.png"

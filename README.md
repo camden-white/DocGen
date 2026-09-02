@@ -54,11 +54,10 @@ cd docgen
 ```
 
 Install the project dependencies and initialize the local configuration
-<!-- [`uv`](https://docs.astral.sh/uv/) -->
 ```bash
 make init
 ```
-This creates any required local files that are intentionally excluded from version control such as config.py
+This creates any required local files that are intentionally excluded from version control such as config.toml
 
 ## Configuration
 
@@ -69,13 +68,13 @@ Sensitive or private configuration should **not** be committed to Git.
 Instead, the repository can include a generic example configuration:
 
 ```text
-config.example.py
+config.example.toml
 ```
 
 while the real local configuration is ignored:
 
 ```text
-config.py
+config.toml
 ```
 
 For example:
@@ -127,11 +126,13 @@ DocGen/
 │       ├── ui.py
 │       ├── utils.py
 │       ├── config.py
+│       ├── config.toml
+│       ├── logo.png
+│       ├── assets/
+│       │   ├── docgen.ico
 │       ├── documents/
 │       │   ├── doc_alpha.py
 │       │   └── doc_beta.py
-│       ├── images/
-│       │   ├── logo.png
 │       └── examples/
 │           ├── config.example.py
 │           ├── document.example.py
@@ -179,7 +180,8 @@ Do not commit confidential company or client information to the repository.
 Files containing private configuration should be included in `.gitignore`, for example:
 
 ```gitignore
-src/docgen/config.py
+config.toml
+logo.png
 output/
 ```
 
