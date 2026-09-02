@@ -1,4 +1,4 @@
-.PHONY: init install run
+.PHONY: init install run build run-build clean-build
 
 PKG := src/docgen
 TEMPLATES := $(PKG)/templates
@@ -32,11 +32,11 @@ build:
 		--add-data "$(TEMPLATES):docgen/templates" \
 		--collect-submodules docgen.documents \
 		$(PKG)/main.py
-	cp $(EXAMPLES)/config.example.toml dist/config.toml
-	cp $(EXAMPLES)/logo.example.png dist/logo.png
+	cp $(EXAMPLES)/config.example.toml dist/$(APP)/config.toml
+	cp $(EXAMPLES)/logo.example.png dist/$(APP)/logo.png
 
 run-build:
-	./dist/$(APP)
+	./dist/$(APP)/$(APP)
 
 clean-build:
 	rm -rf build dist $(APP).spec

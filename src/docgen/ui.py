@@ -10,13 +10,13 @@ def window(title: str = "", size: tuple[float, float] = (0.6, 0.9)) -> tk.Tk:
 
     root = tk.Tk()
     root.title(title)
-    root.iconbitmap(bitmap=ICON_PATH)
     style = ttk.Style(root)
 
     if platform.system() == "Darwin":
         style.theme_use("aqua")
     elif platform.system() == "Windows":
         style.theme_use("vista")
+        root.iconbitmap(str(ICON_PATH))
     else:
         style.theme_use("clam")
 
