@@ -1,33 +1,20 @@
 .PHONY: init install run
 
 PKG := src/docgen
-IMAGES := $(PKG)/images
 TEMPLATES := $(PKG)/templates
-DOCUMENTS := $(PKG)/documents
 EXAMPLES := $(PKG)/examples
 APP := DocGen
 
 init: \
-    $(PKG)/config.py \
-    $(IMAGES)/logo.png \
-    $(TEMPLATES)/example.tex \
-    $(DOCUMENTS)/example.py \
+    $(PKG)/config.toml \
+    $(PKG)/logo.png \
     install
 
-$(PKG)/config.py:
-	cp $(EXAMPLES)/config.example.py $@
+$(PKG)/config.toml:
+	cp $(EXAMPLES)/config.example.toml $@
 
-$(IMAGES)/logo.png:
-	mkdir -p $(@D)
+$(PKG)/logo.png:
 	cp $(EXAMPLES)/logo.example.png $@
-
-$(TEMPLATES)/example.tex:
-	mkdir -p $(@D)
-	cp $(EXAMPLES)/template.example.tex $@
-
-$(DOCUMENTS)/example.py:
-	mkdir -p $(@D)
-	cp $(EXAMPLES)/document.example.py $@
 
 install:
 	uv sync
@@ -40,10 +27,11 @@ build:
 		--name $(APP) \
 		--windowed \
 		--onefile \
-		--add-data "$(IMAGES):docgen/images" \
 		--add-data "$(TEMPLATES):docgen/templates" \
 		--collect-submodules docgen.documents \
 		$(PKG)/main.py
+	cp $(EXAMPLES)/config.example.toml dist/config.toml
+	cp $(EXAMPLES)/logo.example.png dist/logo.png
 
 run-build:
 	./dist/$(APP)

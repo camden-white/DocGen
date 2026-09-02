@@ -1,0 +1,18 @@
+[paths]
+output_dir = "~/Documents"
+
+[company]
+name = "Company Name Inc."
+address = "1234 Business St NE, City, ST 12345"
+
+[agents."Alice Aimes"]
+phone = "(123) 456-7890"
+email = "aliceaimes@example.com"
+
+[agents."Bob Brown"]
+phone = "(234) 567-8901"
+email = "bobbrown@example.com"
+
+[agents."Sam Smith"]
+phone = "(345) 678-9012"
+email = "samsmith@example.com"

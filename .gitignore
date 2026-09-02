@@ -13,15 +13,9 @@ wheels/
 # Outputs
 output/
 
-# Company Data
-config.py
-images/
-
-# Specific Document Frameworks
-documents/
-
-# Templates
-templates/
+# Company-specific Data
+config.toml
+logo.png
 
 # LaTeX generated files
 **/*.aux

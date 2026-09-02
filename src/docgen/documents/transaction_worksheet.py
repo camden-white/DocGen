@@ -6,10 +6,10 @@ from docgen.config import COMPANY_NAME, COMPANY_ADDRESS, TEMPLATE_DIR, OUTPUT_DI
 from docgen.utils import open_pdf, render_latex, compile_pdf
 from docgen.ui import form_window
 
-DISPLAY_NAME = "Document"
+DISPLAY_NAME = "Transaction Worksheet"
 
-TEMPLATE_PATH = TEMPLATE_DIR / "document.tex"
-OUTPUT_PATH = OUTPUT_DIR / "Document.pdf"
+TEMPLATE_PATH = TEMPLATE_DIR / "transaction_worksheet.tex"
+OUTPUT_PATH = OUTPUT_DIR / "TransactionWorksheet.pdf"
 
 FIELDS: tuple[str, ...] = (
     "Agent Name",
@@ -78,7 +78,7 @@ DROPDOWNS: dict[str, tuple[str, ...]] = {
 def main() -> None:
 
     root, entries = form_window(
-        title="Transaction Worksheet",
+        title=DISPLAY_NAME,
         fields=FIELDS,
         formats=FORMATS,
         dropdowns=DROPDOWNS,
