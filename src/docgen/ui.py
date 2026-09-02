@@ -1,3 +1,4 @@
+import platform
 from functools import partial
 import tkinter as tk
 from tkinter import ttk
@@ -9,7 +10,14 @@ def window(title: str = "", size: tuple[float, float] = (0.6, 0.9)) -> tk.Tk:
     root = tk.Tk()
     root.title(title)
     style = ttk.Style(root)
-    style.theme_use("aqua") # aqua, clam, alt, default, classic
+
+    if platform.system() == "Darwin":
+        style.theme_use("aqua")
+    elif platform.system() == "Windows":
+        style.theme_use("vista")
+    else:
+        style.theme_use("clam")
+
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     rel_width = size[0]

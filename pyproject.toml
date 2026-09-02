@@ -1,6 +1,6 @@
 [project]
 name = "docgen"
-version = "1.0.2"
+version = "1.0.3"
 description = "Streamlined document generation"
 readme = "README.md"
 authors = [
