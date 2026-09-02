@@ -26,7 +26,7 @@ build:
 	uv run pyinstaller \
 		--name $(APP) \
 		--windowed \
-		--onefile \
+		--onedir \
 		--add-data "$(TEMPLATES):docgen/templates" \
 		--collect-submodules docgen.documents \
 		$(PKG)/main.py
