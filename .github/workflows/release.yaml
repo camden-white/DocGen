@@ -30,6 +30,8 @@ jobs:
           --name DocGen
           --windowed
           --onedir
+          --icon "src/docgen/assets/docgen.ico"
+          --add-data "src/docgen/assets:docgen/assets"
           --add-data "src/docgen/templates:docgen/templates"
           --collect-submodules docgen.documents
           src/docgen/main.py

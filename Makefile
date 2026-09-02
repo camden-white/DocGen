@@ -27,6 +27,8 @@ build:
 		--name $(APP) \
 		--windowed \
 		--onedir \
+		--icon "$(PKG)/assets/docgen.ico" \
+		--add-data "$(PKG)/assets:docgen/assets" \
 		--add-data "$(TEMPLATES):docgen/templates" \
 		--collect-submodules docgen.documents \
 		$(PKG)/main.py

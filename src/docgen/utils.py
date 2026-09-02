@@ -136,8 +136,8 @@ def find_xelatex() -> Path:
         return macos_texlive
 
     raise FileNotFoundError(
-        "XeLaTeX was not found. Install MacTeX or add /Library/TeX/texbin "
-        "to the VS Code environment PATH."
+        "XeLaTeX was not found. Install a LaTeX distribution "
+        "such as MiKTeX on Windows or MacTeX on macOS."
     )
 
 def render_latex(template: Path, data: dict[str, str]) -> str:

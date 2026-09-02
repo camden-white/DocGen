@@ -3,12 +3,14 @@ from functools import partial
 import tkinter as tk
 from tkinter import ttk
 
+from docgen.config import ICON_PATH
 from docgen.utils import snap
 
 def window(title: str = "", size: tuple[float, float] = (0.6, 0.9)) -> tk.Tk:
 
     root = tk.Tk()
     root.title(title)
+    root.iconbitmap(bitmap=ICON_PATH)
     style = ttk.Style(root)
 
     if platform.system() == "Darwin":

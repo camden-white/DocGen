@@ -1,6 +1,6 @@
 """Generate the transaction worksheet with XeLaTeX."""
 
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 from docgen.config import COMPANY_NAME, COMPANY_ADDRESS, TEMPLATE_DIR, OUTPUT_DIR, AGENTS
 from docgen.utils import open_pdf, render_latex, compile_pdf
@@ -85,27 +85,34 @@ def main() -> None:
     )
 
     def generate() -> None:
-        entered_data: dict[str, str] = {key: value.get() for key, value in entries.items()}
+        try:
+            entered_data: dict[str, str] = {key: value.get() for key, value in entries.items()}
 
-        agent_name = entered_data["Agent Name"]
-        counterparty_type = "Buyer" if entered_data["Client Type"] == "Seller" else "Seller"
+            agent_name = entered_data["Agent Name"]
+            counterparty_type = "Buyer" if entered_data["Client Type"] == "Seller" else "Seller"
 
-        implied_data: dict[str, str] = {
-            "Brokerage Name": COMPANY_NAME,
-            "Brokerage Address": COMPANY_ADDRESS,
-            "Agent Phone": AGENTS[agent_name]["phone"],
-            "Agent Email": AGENTS[agent_name]["email"],
-            "Counterparty Type": counterparty_type,
-        }
+            implied_data: dict[str, str] = {
+                "Brokerage Name": COMPANY_NAME,
+                "Brokerage Address": COMPANY_ADDRESS,
+                "Agent Phone": AGENTS[agent_name]["phone"],
+                "Agent Email": AGENTS[agent_name]["email"],
+                "Counterparty Type": counterparty_type,
+            }
 
-        data = implied_data | entered_data
+            data = implied_data | entered_data
 
-        compile_pdf(
-            render_latex(template=TEMPLATE_PATH, data=data), 
-            OUTPUT_PATH
-        )
+            compile_pdf(
+                render_latex(template=TEMPLATE_PATH, data=data), 
+                OUTPUT_PATH
+            )
 
-        open_pdf(OUTPUT_PATH)
+            open_pdf(OUTPUT_PATH)
+
+        except Exception as error:
+            messagebox.showerror(
+                "PDF Generation Failed",
+                str(error),
+            )
 
     submit=ttk.Button(
         root,
