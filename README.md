@@ -201,12 +201,27 @@ make run
 Development workflow:
 
 ```bash
-uv version --bump patch
-git add .
-git commit -m "Release vx.y.z"
-git tag vx.y.z
-git push
-git push --tags
+# Regular development
+git add path/to/file
+git commit -m "Message"
+git push origin main
+
+# Prepare the release
+uv version --bump kind # patch, minor, or major
+
+# Commit the version change
+git add pyproject.toml uv.lock
+git commit -m "Bump version to X.Y.Z"
+
+# Build the release
+make build
+
+# Tag that exact release commit
+git tag -a vX.Y.Z -m "DocGen vX.Y.Z"
+
+# Push everything
+git push origin main
+git push origin vX.Y.Z
 ```
 
 ## Requirements
