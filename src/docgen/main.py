@@ -29,20 +29,28 @@ def load_documents() -> dict[str, Callable[[], None]]:
 
 def main() -> None:
 
-    root = window(
-        title="DocGen",
-        size=(0.5,0.5)
-    )
+    documents = load_documents()
+    print(len(documents))
 
-    for name, command in load_documents().items():
-        button = ttk.Button(
-            root,
-            text=name,
-            command=command,
+    if len(documents) == 1:
+        for command in documents.values():
+            command()
+
+    else:
+        root = window(
+            title="DocGen",
+            size=(0.5,0.5)
         )
-        button.pack()
 
-    root.mainloop()
+        for name, command in documents.items():
+            button = ttk.Button(
+                root,
+                text=name,
+                command=command,
+            )
+            button.pack()
+
+        root.mainloop()
 
 
 if __name__ == "__main__":
