@@ -130,13 +130,12 @@ DocGen/
 │       ├── logo.png
 │       ├── assets/
 │       │   ├── docgen.ico
+│       │   └── docgen.icns
 │       ├── documents/
 │       │   ├── doc_alpha.py
 │       │   └── doc_beta.py
 │       └── examples/
-│           ├── config.example.py
-│           ├── document.example.py
-│           ├── template.example.tex
+│           ├── config.example.toml
 │           └── logo.example.png
 ├── templates/
 │   ├── doc_alpha.tex
