@@ -213,6 +213,8 @@
   \ifdefempty{\Exclusions}
   {\BodyLine{}}
   {\BodyLine{Exclusions: \Exclusions}}
+  \ifdefempty{\Inclusions}
+  {\ifdefempty{\Exclusions}{\BodyLine{None}}{}}{}
 
 \end{minipage}%
 \hfill
