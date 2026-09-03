@@ -213,9 +213,6 @@ uv version --bump kind # patch, minor, or major
 git add pyproject.toml uv.lock
 git commit -m "Bump version to X.Y.Z"
 
-# Build the release
-make build
-
 # Tag that exact release commit
 git tag -a vX.Y.Z -m "DocGen vX.Y.Z"
 

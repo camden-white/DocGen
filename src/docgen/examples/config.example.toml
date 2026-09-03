@@ -1,3 +1,11 @@
+financing = [
+    "Conventional",
+    "FHA",
+    "VA",
+    "USDA",
+    "Cash",
+]
+
 [paths]
 output_dir = "~/Documents"
 
