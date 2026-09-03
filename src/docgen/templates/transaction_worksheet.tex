@@ -15,10 +15,6 @@
 \usepackage{tabularx}
 \usepackage{etoolbox}
 
-\newcommand{\default}[2]{%
-  \ifdefempty{#1}{#2}{#1}%
-}
-
 % ================================================================
 % EDITABLE FIELDS
 % ================================================================
@@ -196,19 +192,27 @@
   \FieldRow{Possession}{\PossessionDate}
 
   \SectionHeading{Concessions}
-  \BodyLine{\default{\Concessions}{None}}
+  \ifdefempty{\Concessions}
+  {\BodyLine{None}}
+  {\BodyLine{\Concessions}}
 
   \SectionHeading{Contingencies}
-  \BodyLine{\default{\Contingencies}{None}}
+  \ifdefempty{\Contingencies}
+  {\BodyLine{None}}
+  {\BodyLine{\Contingencies}}
 
   \SectionHeading{Home Warranty}
-  \BodyLine{\default{\HomeWarranty}{None}}
+  \ifdefempty{\HomeWarranty}
+  {\BodyLine{None}}
+  {\BodyLine{\HomeWarranty}}
 
   \SectionHeading{Inclusions \& Exclusions}
-  \BodyLine{
-    Inclusions: \default{\Inclusions}{None}\\
-    Exclusions: \default{\Exclusions}{None}
-  }
+  \ifdefempty{\Inclusions}
+  {\BodyLine{}}
+  {\BodyLine{Inclusions: \Inclusions}}
+  \ifdefempty{\Exclusions}
+  {\BodyLine{}}
+  {\BodyLine{Exclusions: \Exclusions}}
 
 \end{minipage}%
 \hfill
