@@ -30,7 +30,6 @@ def load_documents() -> dict[str, Callable[[], None]]:
 def main() -> None:
 
     documents = load_documents()
-    print(len(documents))
 
     if len(documents) == 1:
         for command in documents.values():
@@ -39,16 +38,24 @@ def main() -> None:
     else:
         root = window(
             title="DocGen",
-            size=(0.5,0.5)
+            size=(0.4, 0.6),
+        )
+
+        button_frame = ttk.Frame(root)
+        button_frame.place(
+            relx=0.5,
+            rely=0.5,
+            anchor="center",
         )
 
         for name, command in documents.items():
             button = ttk.Button(
-                root,
+                button_frame,
                 text=name,
                 command=command,
+                width=24,
             )
-            button.pack()
+            button.pack(pady=8)
 
         root.mainloop()
 
