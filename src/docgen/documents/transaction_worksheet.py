@@ -121,7 +121,10 @@ def main() -> None:
         command=generate,
     )
 
-    submit.pack(pady=20)
+    submit.pack(
+        side="bottom",
+        pady=20,
+    )
 
     root.mainloop()
 

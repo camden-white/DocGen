@@ -6,7 +6,10 @@ from tkinter import ttk
 from docgen.config import ICON_PATH
 from docgen.utils import snap
 
-def window(title: str = "", size: tuple[float, float] = (0.6, 0.9)) -> tk.Tk:
+def window(
+    title: str = "", 
+    size: tuple[float, float] = (0.5, 0.5)
+) -> tk.Tk:
 
     root = tk.Tk()
     root.title(title)
@@ -30,64 +33,180 @@ def window(title: str = "", size: tuple[float, float] = (0.6, 0.9)) -> tk.Tk:
 
     return root
 
-def form_window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str, str] = {}, dropdowns: dict[str, tuple[str, ...]] = {}, cols: int = 2, size: tuple[float, float] = (0.6, 0.9)) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
+def form_window(
+    title: str = "",
+    fields: tuple[str, ...] = (),
+    formats: dict[str, str] = {},
+    dropdowns: dict[str, tuple[str, ...]] = {},
+    cols: int = 2,
+    size: tuple[float, float] = (0.6, 0.8),
+) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
 
     root = window(
         title=title,
         size=size,
     )
 
-    form = ttk.Frame(root)
-    form.pack(padx=30, pady=30, fill="both", expand=True)
+    container = ttk.Frame(root)
+    container.pack(
+        padx=30,
+        pady=30,
+        fill="both",
+        expand=True,
+    )
 
-    form.columnconfigure(1, weight=1)
-    form.columnconfigure(3, weight=1)
+    canvas = tk.Canvas(
+        container,
+        highlightthickness=0,
+        borderwidth=0,
+        background=root.cget("background"),
+    )
+
+    scrollbar = ttk.Scrollbar(
+        container,
+        orient="vertical",
+        command=canvas.yview,
+    )
+
+    canvas.configure(
+        yscrollcommand=scrollbar.set,
+    )
+
+    canvas.pack(
+        side="left",
+        fill="both",
+        expand=True,
+    )
+
+    scrollbar.pack(
+        side="right",
+        fill="y",
+    )
+
+    form = ttk.Frame(canvas)
+
+    form_window_id = canvas.create_window(
+        (0, 0),
+        window=form,
+        anchor="nw",
+    )
+
+    form.bind(
+        "<Configure>",
+        lambda event: canvas.configure(
+            scrollregion=canvas.bbox("all"),
+        ),
+    )
+
+    canvas.bind(
+        "<Configure>",
+        lambda event: canvas.itemconfigure(
+            form_window_id,
+            width=event.width,
+        ),
+    )
+
+    def mousewheel_scroll(event: tk.Event) -> str:
+        if platform.system() == "Darwin":
+            canvas.yview_scroll(-event.delta, "units")
+        elif platform.system() == "Windows":
+            canvas.yview_scroll(-(event.delta // 120), "units")
+
+        return "break"
+
+    def touchpad_scroll(event: tk.Event) -> str:
+        raw = event.delta & 0xFFFFFFFF
+        delta_y = raw & 0xFFFF
+
+        if delta_y >= 0x8000:
+            delta_y -= 0x10000
+
+        first, _ = canvas.yview()
+        canvas.yview_moveto(first - delta_y * 0.001)
+
+        return "break"
+
+    if platform.system() == "Darwin":
+        root.bind_all(
+            "<TouchpadScroll>",
+            touchpad_scroll,
+            add="+",
+        )
+        root.bind_all(
+            "<MouseWheel>",
+            mousewheel_scroll,
+            add="+",
+        )
+
+    elif platform.system() == "Windows":
+        root.bind_all(
+            "<MouseWheel>",
+            mousewheel_scroll,
+            add="+",
+        )
+
+    else:
+        root.bind_all(
+            "<Button-4>",
+            lambda event: canvas.yview_scroll(-1, "units"),
+            add="+",
+        )
+        root.bind_all(
+            "<Button-5>",
+            lambda event: canvas.yview_scroll(1, "units"),
+            add="+",
+        )
 
     entries: dict[str, ttk.Entry | ttk.Combobox] = {}
 
-    max_row = (len(fields) + 1) // cols
+    max_row = (len(fields) + cols - 1) // cols
+
+    for col in range(cols):
+        form.columnconfigure(
+            2 * col + 1,
+            weight=1,
+        )
 
     for i, field in enumerate(fields):
         col = i // max_row
         row = i % max_row
+
         label_col = 2 * col
         entry_col = label_col + 1
 
-        if field in dropdowns.keys():
-            combobox = ttk.Combobox(
+        widget: ttk.Combobox | ttk.Entry
+
+        if field in dropdowns:
+            widget = ttk.Combobox(
                 form,
                 values=dropdowns[field],
                 state="readonly",
                 width=30,
             )
-            combobox.grid(
-                row=row,
-                column=entry_col,
-                sticky="ew",
-                padx=(0, 25),
-                pady=8,
-            )
-
-            entries[field] = combobox
 
         else:
-            entry = ttk.Entry(
+            widget = ttk.Entry(
                 form,
                 width=30,
             )
-            entry.grid(
-                row=row,
-                column=entry_col,
-                sticky="ew",
-                padx=(0, 25),
-                pady=8,
-            )
-            entry.bind(
+
+            widget.bind(
                 "<FocusOut>",
-                partial(snap, format_type=formats.get(field)),
+                partial(
+                    snap,
+                    format_type=formats.get(field),
+                ),
             )
 
-            entries[field] = entry
+        widget.grid(
+            row=row,
+            column=entry_col,
+            sticky="ew",
+            padx=(0, 25),
+            pady=8,
+        )
+
+        entries[field] = widget
 
         ttk.Label(
             form,
@@ -99,8 +218,5 @@ def form_window(title: str = "", fields: tuple[str, ...] = (), formats: dict[str
             padx=(10, 8),
             pady=8,
         )
-
-    form.columnconfigure(1, weight=1)
-    form.columnconfigure(3, weight=1)
 
     return root, entries
