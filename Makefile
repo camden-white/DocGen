@@ -4,6 +4,7 @@ PKG := src/docgen
 TEMPLATES := $(PKG)/templates
 EXAMPLES := $(PKG)/examples
 APP := DocGen
+ASSETS := $(PKG)/assets
 
 init: \
     $(PKG)/config.toml \
@@ -27,31 +28,15 @@ build:
 		--name $(APP) \
 		--windowed \
 		--onedir \
-		--icon "$(PKG)/assets/docgen.ico" \
-		--add-data "$(PKG)/assets:docgen/assets" \
-		--add-data "$(TEMPLATES):docgen/templates" \
-		--collect-submodules docgen.documents \
-		$(PKG)/main.py
-	cp $(EXAMPLES)/config.example.toml dist/$(APP)/config.toml
-	cp $(EXAMPLES)/logo.example.png dist/$(APP)/logo.png
-
-run-build:
-	./dist/$(APP)/$(APP)
-
-build-macos:
-	uv run pyinstaller \
-		--name $(APP) \
-		--windowed \
-		--onedir \
-		--icon "$(PKG)/assets/docgen.icns" \
-		--add-data "$(PKG)/assets:docgen/assets" \
+		--icon "$(ASSETS)/docgen.icns" \
+		--add-data "$(ASSETS):docgen/assets" \
 		--add-data "$(TEMPLATES):docgen/templates" \
 		--collect-submodules docgen.documents \
 		$(PKG)/main.py
 	cp $(EXAMPLES)/config.example.toml dist/config.toml
 	cp $(EXAMPLES)/logo.example.png dist/logo.png
 
-run-build-macos:
+run-build:
 	open dist/$(APP).app
 
 clean-build:
