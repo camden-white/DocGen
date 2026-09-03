@@ -146,7 +146,7 @@ def render_latex(template: Path, data: dict[str, str]) -> str:
     with open(template, "r", encoding="utf-8") as file:
         latex_template = file.read()
 
-    latex_template = latex_template.replace("../images/logo.png", LOGO_PATH.as_posix())
+    latex_template = latex_template.replace("../logo.png", LOGO_PATH.as_posix())
 
     for key in data.keys():
         latex_template = latex_template.replace(latex_placeholder(key), escape_latex(data[key]))

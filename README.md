@@ -204,10 +204,10 @@ Development workflow:
 ```bash
 uv version --bump patch
 git add .
-git commit -m "Release v1.0.9"
-git tag v1.0.9
+git commit -m "Release vx.y.z"
+git tag vx.y.z
 git push
-git push origin v1.0.9
+git push --tags
 ```
 
 ## Requirements
@@ -222,7 +222,8 @@ Tkinter is included with many standard Python installations, although availabili
 ## Roadmap
 
 ### Phase 1: Workable Application
-- [x] Tkinter GUI to effectively generate a PDF
+- [x] Proof of concept terminal program to generate a PDF
+- [x] Tkinter GUI to generate a PDF
 - [x] Windows application
 - [x] macOS application
 
