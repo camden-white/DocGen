@@ -39,5 +39,6 @@ COMPANY_NAME: str = config["company"]["name"]
 COMPANY_ADDRESS: str = config["company"]["address"]
 
 AGENTS: dict[str, dict[str, str]] = config["agents"]
+FINANCING: tuple[str, ...] = tuple(config["financing"])
 
 # <=================================> #

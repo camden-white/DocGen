@@ -2,7 +2,7 @@
 
 from tkinter import ttk, messagebox
 
-from docgen.config import COMPANY_NAME, COMPANY_ADDRESS, TEMPLATE_DIR, OUTPUT_DIR, AGENTS
+from docgen.config import COMPANY_NAME, COMPANY_ADDRESS, TEMPLATE_DIR, OUTPUT_DIR, AGENTS, FINANCING
 from docgen.utils import open_pdf, render_latex, compile_pdf
 from docgen.ui import form_window
 
@@ -40,7 +40,7 @@ FIELDS: tuple[str, ...] = (
     "Lender Company",
     "Lender Phone",
     "Lender Email",
-    "Loan Type",
+    "Financing Type",
     "Escrow Contact Name",
     "Escrow Company",
     "Escrow Phone",
@@ -73,6 +73,7 @@ FORMATS: dict[str, str] = {
 DROPDOWNS: dict[str, tuple[str, ...]] = {
     "Agent Name": tuple(AGENTS.keys()),
     "Client Type": ("Buyer", "Seller"),
+    "Financing Type": FINANCING,
 }
 
 def main() -> None:

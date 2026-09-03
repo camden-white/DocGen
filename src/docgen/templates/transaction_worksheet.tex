@@ -72,7 +72,7 @@
 \newcommand{\LenderCompany}{@@LENDERCOMPANY@@}
 \newcommand{\LenderPhone}{@@LENDERPHONE@@}
 \newcommand{\LenderEmail}{@@LENDEREMAIL@@}
-\newcommand{\LoanType}{@@LOANTYPE@@}
+\newcommand{\FinancingType}{@@FINANCINGTYPE@@}
 
 % Escrow
 \newcommand{\EscrowContactName}{@@ESCROWCONTACTNAME@@}
@@ -230,12 +230,17 @@
   \BodyLine{\CounterpartyAgentPhone}
   \BodyLine{\CounterpartyAgentEmail}
 
-  \SectionHeading{Lender Office}
+  
+  \ifdefstring{\FinancingType}{Cash}
+  {\SectionHeading{Purchase Type}}
+  {\SectionHeading{Lender}}
   \BodyLine{\LenderName}
   \BodyLine{\LenderCompany}
   \BodyLine{\LenderPhone}
   \BodyLine{\LenderEmail}
-  \BodyLine{Loan Type: \default{\LoanType}{None}}
+  \ifdefstring{\FinancingType}{Cash}
+  {\BodyLine{All Cash Transaction}}
+  {\BodyLine{Loan Type: \FinancingType}}
 
   \SectionHeading{Escrow Company}
   \BodyLine{\EscrowContactName}
