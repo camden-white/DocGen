@@ -1,18 +1,21 @@
 # DocGen
 
-![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
-![Windows](https://img.shields.io/badge/Windows-0078D4?logo=windows)
-![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
-![Tkinter](https://img.shields.io/badge/GUI-Tkinter-3776AB?logo=python&logoColor=white)
-![XeLaTeX](https://img.shields.io/badge/Typesetting-XeLaTeX-008080?logo=latex&logoColor=white)
-![uv](https://img.shields.io/badge/Package%20Manager-uv-DE5FE9?logo=uv&logoColor=white)
-![GNU Make](https://img.shields.io/badge/Build-GNU%20Make-A42E2B?logo=gnu&logoColor=white)
-[![License](https://img.shields.io/badge/License-Apache%202.0-white?logo=apache&logoColor=white)](LICENSE)
+![Release](https://img.shields.io/github/v/release/camden-white/DocGen?logo=github&color=6F42C1)
 ![Status](https://img.shields.io/badge/Status-Active%20Development-2DA44E?logo=github&logoColor=white)
-<!-- ![Ruff](https://img.shields.io/badge/Lint-Ruff-D7FF64?logo=ruff&logoColor=black)
-![mypy](https://img.shields.io/badge/Types-mypy-2A6DB2)
-![pytest](https://img.shields.io/badge/Tests-pytest-0A9EDC?logo=pytest&logoColor=white) -->
+[![License](https://img.shields.io/badge/License-Apache%202.0-white?logo=apache&logoColor=white)](LICENSE)
+
+![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
+![Tkinter](https://img.shields.io/badge/Tkinter-3776AB?logo=python&logoColor=white)
+![XeLaTeX](https://img.shields.io/badge/XeLaTeX-008080?logo=latex&logoColor=white)
+![Config](https://img.shields.io/badge/TOML-9C4121?logo=toml&logoColor=white)
+![uv](https://img.shields.io/badge/uv-DE5FE9?logo=uv&logoColor=white)
+![ty](https://img.shields.io/badge/ty-261230?logo=ty&logoColor=white)
+![Ruff](https://img.shields.io/badge/ruff-D7FF64?logo=ruff&logoColor=black)
+![GNU Make](https://img.shields.io/badge/GNU%20Make-A42E2B?logo=gnu&logoColor=white)
+![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-0078D4?logo=windows)
+<!-- ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) -->
+
 
 A simple application for generating PDF documents from LaTeX templates.
 
@@ -106,10 +109,10 @@ Start the application with:
 make run
 ```
 
-or directly with Python:
+or run the build with
 
 ```bash
-uv run python docgen
+make run-build
 ```
 
 The Tkinter interface will open and prompt for the information required by the selected document.
@@ -206,6 +209,16 @@ git add path/to/file
 git commit -m "Message"
 git push origin main
 
+# Bump and release new version (-patch, -minor, -major)
+make bump-X
+```
+
+<!-- ```bash
+# Regular development
+git add path/to/file
+git commit -m "Message"
+git push origin main
+
 # Prepare the release
 uv version --bump kind # patch, minor, or major
 
@@ -216,10 +229,9 @@ git commit -m "Bump version to X.Y.Z"
 # Tag that exact release commit
 git tag -a vX.Y.Z -m "DocGen vX.Y.Z"
 
-# Push everything
-git push origin main
-git push origin vX.Y.Z
-```
+# Push commit and tags
+git push --follow-tags
+``` -->
 
 ## Requirements
 
