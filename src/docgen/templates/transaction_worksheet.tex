@@ -14,6 +14,21 @@
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{etoolbox}
+\usepackage{adjustbox}
+
+\newcommand{\agentsize}{17bp}
+\newcommand{\agentspacing}{19bp}
+
+\newcommand{\addresssize}{14bp}
+\newcommand{\addressspacing}{18bp}
+
+\newcommand{\sectionsize}{12bp}
+\newcommand{\sectionspacing}{14bp}
+
+\newcommand{\textsize}{12bp}
+\newcommand{\textspacing}{14bp}
+
+\newcommand{\maxbodylineheight}{12mm}
 
 % ================================================================
 % EDITABLE FIELDS
@@ -111,7 +126,7 @@
 
 \newcommand{\SectionHeading}[1]{%
   \par\addvspace{0.95\baselineskip}%
-  {\Aptos\bfseries\fontsize{12.5bp}{14.5bp}\selectfont\MakeUppercase{#1}\par}%
+  {\Aptos\bfseries\fontsize{\sectionsize}{\sectionspacing}\selectfont\MakeUppercase{#1}\par}%
   % \vspace{1.2bp}%
   {\color{ParamountBlue}\rule{\linewidth}{1.8bp}\par}%
   \vspace{3.2bp}%
@@ -121,22 +136,93 @@
   \vspace{6bp}%
   \noindent
   \begin{tabularx}{\linewidth}{%
-    @{}>{\raggedright\arraybackslash\Aptos\fontsize{12bp}{18bp}\selectfont}X%
-    >{\raggedleft\arraybackslash\Aptos\fontsize{12bp}{18bp}\selectfont}p{0.37\linewidth}@{}%
+    @{}>{\raggedright\arraybackslash\Aptos\fontsize{\textsize}{\textspacing}\selectfont}X%
+    >{\raggedleft\arraybackslash\Aptos\fontsize{\textsize}{\textspacing}\selectfont}p{0.37\linewidth}@{}%
   }
   \mbox{\MakeUppercase{#1}} & \mbox{#2}
   \end{tabularx}\par
 }
 
-\newcommand{\BodyLine}[1]{%
-  {\Aptos\fontsize{12bp}{18bp}\selectfont #1\par}%
+\ExplSyntaxOn
+
+\box_new:N \l__bodyline_box
+\dim_new:N \l__bodyline_width_dim
+\fp_new:N  \l__bodyline_size_fp
+
+\NewDocumentCommand{\BodyLine}{m}
+{
+  \group_begin:
+
+  % Preserve the current column width
+  \dim_set:Nn \l__bodyline_width_dim { \linewidth }
+
+  % Start at the normal BodyLine font size
+  \fp_set:Nn \l__bodyline_size_fp { 12 }
+
+  % Measure at the current font size
+  \vbox_set:Nn \l__bodyline_box
+  {
+    \hsize = \l__bodyline_width_dim
+    \linewidth = \l__bodyline_width_dim
+
+    \Aptos
+    \fontsize
+      { \fp_to_decimal:N \l__bodyline_size_fp bp }
+      { \fp_eval:n { 1.5 * \l__bodyline_size_fp } bp }
+    \selectfont
+
+    #1\par
+  }
+
+  % Reduce the font until the paragraph fits
+  \dim_while_do:nn
+    {
+      \box_ht:N \l__bodyline_box
+      + \box_dp:N \l__bodyline_box
+      >
+      \maxbodylineheight
+    }
+  {
+    \fp_sub:Nn \l__bodyline_size_fp { 0.1 }
+
+    \vbox_set:Nn \l__bodyline_box
+    {
+      \hsize = \l__bodyline_width_dim
+      \linewidth = \l__bodyline_width_dim
+
+      \Aptos
+      \fontsize
+        { \fp_to_decimal:N \l__bodyline_size_fp bp }
+        { \fp_eval:n { 1.5 * \l__bodyline_size_fp } bp }
+      \selectfont
+
+      #1\par
+    }
+  }
+
+  % Typeset normally at the resulting font size
+  \Aptos
+  \fontsize
+    { \fp_to_decimal:N \l__bodyline_size_fp bp }
+    { \fp_eval:n { 1.5 * \l__bodyline_size_fp } bp }
+  \selectfont
+
+  #1\par
+
+  \group_end:
 }
+
+\ExplSyntaxOff
+
+% \newcommand{\BodyLine}[1]{%
+%   {\Aptos\fontsize{\textsize}{\textspacing}\selectfont #1\par}%
+% }
 
 \newcommand{\HeaderBlock}{%
   \colorbox{ParamountBlue}{%
     \begin{minipage}{\linewidth}
       \vspace{8.5bp}
-      \hspace*{10.9bp}%
+      \hspace*{11bp}%
       \begin{minipage}[c]{0.2\linewidth}
         \centering
         \includegraphics[width=105bp]{\LogoPath}
@@ -144,7 +230,7 @@
       \hfill
       \begin{minipage}[c]{0.66\linewidth}
         \color{white}
-        {\AptosExtraBold\fontsize{17bp}{19bp}\selectfont
+        {\AptosExtraBold\fontsize{\agentsize}{\agentspacing}\selectfont
           \MakeUppercase{\AgentName}\par}
         \vspace{3.5bp}
         {\Aptos\bfseries\fontsize{10bp}{14bp}\selectfont
@@ -153,7 +239,7 @@
           \AgentPhone\par
           \MakeUppercase{\AgentEmail}\par}
       \end{minipage}%
-      \hspace*{10.9bp}
+      \hspace*{11bp}
       \vspace{8.5bp}
     \end{minipage}%
   }%
@@ -166,7 +252,7 @@
 \vspace{18bp}
 
 \begin{center}
-  {\Aptos\fontsize{15bp}{19bp}\selectfont
+  {\Aptos\fontsize{\addresssize}{\addressspacing}\selectfont
     \PropertyStreet\par
     \CityStateZip\par}
 \end{center}
@@ -207,14 +293,22 @@
   {\BodyLine{\HomeWarranty}}
 
   \SectionHeading{Inclusions \& Exclusions}
-  \ifdefempty{\Inclusions}
-  {\BodyLine{}}
-  {\BodyLine{Inclusions: \Inclusions}}
-  \ifdefempty{\Exclusions}
-  {\BodyLine{}}
-  {\BodyLine{Exclusions: \Exclusions}}
-  \ifdefempty{\Inclusions}
-  {\ifdefempty{\Exclusions}{\BodyLine{None}}{}}{}
+  \ifdefempty{\Inclusions}{
+    \ifdefempty{\Exclusions}{
+      \BodyLine{None}
+    }{
+      \BodyLine{Exclusions: \Exclusions}
+    }
+  }{
+    \ifdefempty{\Exclusions}{
+      \BodyLine{Inclusions: \Inclusions}
+    }{
+      \BodyLine{
+        Inclusions: \Inclusions\\ 
+        Exclusions: \Exclusions
+      }
+    }
+  }
 
 \end{minipage}%
 \hfill
