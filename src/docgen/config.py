@@ -1,8 +1,10 @@
-from pathlib import Path
+"""Package paths and constants"""
+
 import sys
 import tomllib
+from pathlib import Path
 
-PACKAGE_DIR = Path(__file__).resolve().parent # src/docgen/
+PACKAGE_DIR = Path(__file__).resolve().parent  # src/docgen/
 PROJECT_DIR = PACKAGE_DIR.parent.parent
 DOCUMENT_DIR = PACKAGE_DIR / "documents"
 TEMPLATE_DIR = PACKAGE_DIR / "templates"
@@ -22,8 +24,6 @@ if FROZEN:
 else:
     APP_DIR = PACKAGE_DIR
 
-# APP_DIR = Path(sys.executable).resolve().parent if FROZEN else PACKAGE_DIR
-
 CONFIG_PATH = APP_DIR / "config.toml"
 LOGO_PATH = APP_DIR / "logo.png"
 ICON_PATH = ASSET_DIR / "docgen.ico"
@@ -33,7 +33,11 @@ with CONFIG_PATH.open("rb") as file:
 
 # <========== config.toml ==========> #
 
-OUTPUT_DIR = Path(config["paths"]["output_dir"]).expanduser() if FROZEN else PROJECT_DIR / "output"
+OUTPUT_DIR = (
+    Path(config["paths"]["output_dir"]).expanduser()
+    if FROZEN
+    else PROJECT_DIR / "output"
+)
 
 COMPANY_NAME: str = config["company"]["name"]
 COMPANY_ADDRESS: str = config["company"]["address"]

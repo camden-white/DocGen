@@ -1,14 +1,17 @@
-"""DocGen program"""
+"""DocGen application"""
 
 import importlib
 import pkgutil
 from collections.abc import Callable
 from tkinter import ttk
 
-from docgen.ui import window
 import docgen.documents
+from docgen.ui import window
+
 
 def load_documents() -> dict[str, Callable[[], None]]:
+    """Load the modules in the documents/ directory"""
+
     documents: dict[str, Callable[[], None]] = {}
 
     for module_info in pkgutil.iter_modules(docgen.documents.__path__):
@@ -27,7 +30,9 @@ def load_documents() -> dict[str, Callable[[], None]]:
 
     return documents
 
+
 def main() -> None:
+    """DocGen application"""
 
     documents = load_documents()
 

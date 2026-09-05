@@ -1,63 +1,90 @@
+"""Package utilities"""
+
 import platform
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk
 
 from docgen.config import LOGO_PATH
 
+
 def collapse_spaces(string: str) -> str:
+    """Turn all whitespaces into single spaces"""
     return (" ").join(string.split())
 
+
 def letterize(string: str, spaces: bool = False) -> str:
-    letters = [letter for letter in string if letter.isalpha() or spaces and letter.isspace()]
+    """Remove all non-letters with or without spaces"""
+    letters = [
+        letter for letter in string if letter.isalpha() or spaces and letter.isspace()
+    ]
     formatted = "".join(letters)
     return formatted
 
+
 def latex_placeholder(string: str, delimiter: str = "@@") -> str:
+    """Turn string into corresponding LaTeX template placeholder"""
     formatted = delimiter + letterize(string).upper() + delimiter
     return formatted
 
+
 def format_email(string: str) -> str:
+    """Remove spaces and lower-case"""
     formatted = string.lower().replace(" ", "")
     return formatted
 
+
 def digitize(string: str) -> str:
+    """Remove all non-digits"""
     digits = [d for d in string if d.isdigit()]
     return "".join(digits)
 
+
 def format_phone(string: str) -> str:
+    """Turn string into digits of the form (123) 456-7890"""
     digits = digitize(string)
     formatted = ""
     if digits:
         formatted = f"({digits[0:3]}) {digits[3:6]}-{digits[6:10]}"
     return formatted
 
+
 def format_money(string: str) -> str:
+    """Format string into digits of the form $1,234.56"""
     digits = digitize(string)
     formatted = ""
     if digits:
         formatted = r"$" + f"{int(digits):,}"
     return formatted
 
+
 def format_date(string: str) -> str:
+    """Remove non-digits and non-slashes"""
     clean_string = string.replace("-", "/").replace(" ", "")
     components = clean_string.split("/")
     numeric_components = [digitize(c) for c in components]
     formatted = "/".join(numeric_components)
     return formatted
 
+
 def format_name(string: str) -> str:
+    """Remove non-letters and turn whitespaces into single spaces"""
     formatted = collapse_spaces(letterize(string, spaces=True))
     return formatted
 
+
 def format_plain(string: str) -> str:
+    """Plain paragraph formatting"""
     formatted = collapse_spaces(string)
     return formatted
 
+
 def snap(event: tk.Event[ttk.Entry], format_type: str | None) -> None:
+    """Snap an event to it's proper formatting"""
+
     entry = event.widget
     raw = entry.get().strip()
 
@@ -84,13 +111,12 @@ def snap(event: tk.Event[ttk.Entry], format_type: str | None) -> None:
 
 
 def open_pdf(pdf_path: Path) -> None:
+    """Open PDF according to the platform"""
+
     system: str = platform.system()
 
     if system == "Darwin":
-        subprocess.run(
-            ["open", str(pdf_path)], 
-            check=True
-        )
+        subprocess.run(["open", str(pdf_path)], check=True)
 
     elif system == "Windows":
         subprocess.run(
@@ -99,14 +125,11 @@ def open_pdf(pdf_path: Path) -> None:
         )
 
     elif system == "Linux":
-        subprocess.run(
-            ["xdg-open", str(pdf_path)], 
-            check=True
-        )
+        subprocess.run(["xdg-open", str(pdf_path)], check=True)
 
 
-def escape_latex(value: str) -> str:
-    """Escape user-entered text before inserting it into LaTeX."""
+def escape_latex(string: str) -> str:
+    """Escape special characters that would be non-strings in LaTeX."""
 
     replacements = (
         ("\\", r"\textbackslash{}"),
@@ -121,8 +144,9 @@ def escape_latex(value: str) -> str:
         ("^", r"\textasciicircum{}"),
     )
     for source, replacement in replacements:
-        value = value.replace(source, replacement)
-    return value
+        string = string.replace(source, replacement)
+    return string
+
 
 def find_xelatex() -> Path:
     """Return a working XeLaTeX executable, including the macOS TeX Live path."""
@@ -140,18 +164,22 @@ def find_xelatex() -> Path:
         "such as MiKTeX on Windows or MacTeX on macOS."
     )
 
+
 def render_latex(template: Path, data: dict[str, str]) -> str:
-    """Insert safe dynamic values into the LaTeX template."""
+    """Insert safe values into the LaTeX template."""
 
     with open(template, "r", encoding="utf-8") as file:
         latex_template = file.read()
 
     latex_template = latex_template.replace("../logo.png", LOGO_PATH.as_posix())
 
-    for key in data.keys():
-        latex_template = latex_template.replace(latex_placeholder(key), escape_latex(data[key]))
+    for key, value in data.items():
+        latex_template = latex_template.replace(
+            latex_placeholder(key), escape_latex(value)
+        )
 
     return latex_template
+
 
 def compile_pdf(latex_source: str, output_pdf: Path) -> None:
     """Compile LaTeX in an isolated directory and copy out a verified PDF."""

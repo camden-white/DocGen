@@ -1,10 +1,18 @@
-"""Generate the transaction worksheet with XeLaTeX."""
+"""Generate the transaction worksheet with XeLaTeX"""
 
-from tkinter import ttk, messagebox
+import subprocess
+from tkinter import messagebox, ttk
 
-from docgen.config import COMPANY_NAME, COMPANY_ADDRESS, TEMPLATE_DIR, OUTPUT_DIR, AGENTS, FINANCING
-from docgen.utils import open_pdf, render_latex, compile_pdf
+from docgen.config import (
+    AGENTS,
+    COMPANY_ADDRESS,
+    COMPANY_NAME,
+    FINANCING,
+    OUTPUT_DIR,
+    TEMPLATE_DIR,
+)
 from docgen.ui import form_window
+from docgen.utils import compile_pdf, open_pdf, render_latex
 
 DISPLAY_NAME = "Transaction Worksheet"
 
@@ -48,11 +56,11 @@ FIELDS: tuple[str, ...] = (
 )
 
 FORMATS: dict[str, str] = {
-    "Client Names" : "name",
-    "Counterparty Names" : "name",
-    "Counterparty Agent Name" : "name",
-    "Lender Name" : "name",
-    "Escrow Contact Name" : "name",
+    "Client Names": "name",
+    "Counterparty Names": "name",
+    "Counterparty Agent Name": "name",
+    "Lender Name": "name",
+    "Escrow Contact Name": "name",
     "Purchase Price": "money",
     "Earnest Money": "money",
     "Date Accepted": "date",
@@ -76,8 +84,9 @@ DROPDOWNS: dict[str, tuple[str, ...]] = {
     "Financing Type": FINANCING,
 }
 
-def main() -> None:
 
+def main() -> None:
+    """Transaction worksheet"""
     root, entries = form_window(
         title=DISPLAY_NAME,
         fields=FIELDS,
@@ -86,11 +95,16 @@ def main() -> None:
     )
 
     def generate() -> None:
+        """Generate, download, and open PDF"""
         try:
-            entered_data: dict[str, str] = {key: value.get() for key, value in entries.items()}
+            entered_data: dict[str, str] = {
+                key: value.get() for key, value in entries.items()
+            }
 
             agent_name = entered_data["Agent Name"]
-            counterparty_type = "Buyer" if entered_data["Client Type"] == "Seller" else "Seller"
+            counterparty_type = (
+                "Buyer" if entered_data["Client Type"] == "Seller" else "Seller"
+            )
 
             implied_data: dict[str, str] = {
                 "Brokerage Name": COMPANY_NAME,
@@ -102,20 +116,22 @@ def main() -> None:
 
             data = implied_data | entered_data
 
-            compile_pdf(
-                render_latex(template=TEMPLATE_PATH, data=data), 
-                OUTPUT_PATH
-            )
+            compile_pdf(render_latex(template=TEMPLATE_PATH, data=data), OUTPUT_PATH)
 
             open_pdf(OUTPUT_PATH)
 
-        except Exception as error:
+        except (
+            subprocess.CalledProcessError,
+            FileNotFoundError,
+            PermissionError,
+            ValueError,
+        ) as error:
             messagebox.showerror(
                 "PDF Generation Failed",
                 str(error),
             )
 
-    submit=ttk.Button(
+    submit = ttk.Button(
         root,
         text="Generate PDF",
         command=generate,

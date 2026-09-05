@@ -1,15 +1,16 @@
+"""User interface with Tkinter"""
+
 import platform
-from functools import partial
 import tkinter as tk
+from functools import partial
 from tkinter import ttk
 
 from docgen.config import ICON_PATH
 from docgen.utils import snap
 
-def window(
-    title: str = "", 
-    size: tuple[float, float] = (0.5, 0.5)
-) -> tk.Tk:
+
+def window(title: str = "", size: tuple[float, float] = (0.5, 0.5)) -> tk.Tk:
+    """Standard root window"""
 
     root = tk.Tk()
     root.title(title)
@@ -33,14 +34,22 @@ def window(
 
     return root
 
+
 def form_window(
     title: str = "",
     fields: tuple[str, ...] = (),
-    formats: dict[str, str] = {},
-    dropdowns: dict[str, tuple[str, ...]] = {},
+    formats: dict[str, str] | None = None,
+    dropdowns: dict[str, tuple[str, ...]] | None = None,
     cols: int = 2,
     size: tuple[float, float] = (0.6, 0.8),
 ) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
+    """Document form window"""
+
+    if formats is None:
+        formats = {}
+
+    if dropdowns is None:
+        dropdowns = {}
 
     root = window(
         title=title,
@@ -107,6 +116,7 @@ def form_window(
     )
 
     def mousewheel_scroll(event: tk.Event) -> str:
+        """Mousewheel scrolling"""
         if platform.system() == "Darwin":
             canvas.yview_scroll(-event.delta, "units")
         elif platform.system() == "Windows":
@@ -115,6 +125,7 @@ def form_window(
         return "break"
 
     def touchpad_scroll(event: tk.Event) -> str:
+        """Touchpad scrolling"""
         raw = event.delta & 0xFFFFFFFF
         delta_y = raw & 0xFFFF
 
@@ -148,12 +159,12 @@ def form_window(
     else:
         root.bind_all(
             "<Button-4>",
-            lambda event: canvas.yview_scroll(-1, "units"),
+            lambda _: canvas.yview_scroll(-1, "units"),
             add="+",
         )
         root.bind_all(
             "<Button-5>",
-            lambda event: canvas.yview_scroll(1, "units"),
+            lambda _: canvas.yview_scroll(1, "units"),
             add="+",
         )
 
