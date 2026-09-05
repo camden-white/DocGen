@@ -1,14 +1,30 @@
 """Package utilities"""
 
+import importlib
+import pkgutil
 import platform
 import shutil
 import subprocess
 import tempfile
 import tkinter as tk
+from collections.abc import Callable
 from pathlib import Path
 from tkinter import ttk
+from typing import Any
 
+import docgen.documents
 from docgen.config import LOGO_PATH
+
+
+class Textbox(tk.Text):
+    """Tall text box with similar behavior to tk.Entry"""
+
+    def get(self, index1: Any = None, index2: Any = None) -> str:
+        if index1 is None:
+            index1 = "1.0"
+            index2 = "end-1c"
+
+        return super().get(index1=index1, index2=index2)
 
 
 def collapse_spaces(string: str) -> str:
@@ -82,52 +98,6 @@ def format_plain(string: str) -> str:
     return formatted
 
 
-def snap(event: tk.Event[ttk.Entry], format_type: str | None) -> None:
-    """Snap an event to it's proper formatting"""
-
-    entry = event.widget
-    raw = entry.get().strip()
-
-    if not raw:
-        return
-
-    if format_type is None:
-        formatted = format_plain(raw)
-    elif format_type == "name":
-        formatted = format_name(raw)
-    elif format_type == "phone":
-        formatted = format_phone(raw)
-    elif format_type == "email":
-        formatted = format_email(raw)
-    elif format_type == "money":
-        formatted = format_money(raw)
-    elif format_type == "date":
-        formatted = format_date(raw)
-    else:
-        raise ValueError(f"Unrecognized format type for {entry}")
-
-    entry.delete(0, tk.END)
-    entry.insert(0, formatted)
-
-
-def open_pdf(pdf_path: Path) -> None:
-    """Open PDF according to the platform"""
-
-    system: str = platform.system()
-
-    if system == "Darwin":
-        subprocess.run(["open", str(pdf_path)], check=True)
-
-    elif system == "Windows":
-        subprocess.run(
-            ["cmd", "/c", "start", "", str(pdf_path)],
-            check=True,
-        )
-
-    elif system == "Linux":
-        subprocess.run(["xdg-open", str(pdf_path)], check=True)
-
-
 def escape_latex(string: str) -> str:
     """Escape special characters that would be non-strings in LaTeX."""
 
@@ -146,6 +116,79 @@ def escape_latex(string: str) -> str:
     for source, replacement in replacements:
         string = string.replace(source, replacement)
     return string
+
+
+def snap(event: tk.Event[ttk.Entry | Textbox], format_type: str | None) -> None:
+    """Snap an event to it's proper formatting"""
+
+    entry = event.widget
+    raw = entry.get().strip()
+
+    if not raw:
+        return
+
+    indexing: str | int = 0
+
+    if format_type is None:
+        formatted = format_plain(raw)
+    elif format_type == "name":
+        formatted = format_name(raw)
+    elif format_type == "phone":
+        formatted = format_phone(raw)
+    elif format_type == "email":
+        formatted = format_email(raw)
+    elif format_type == "money":
+        formatted = format_money(raw)
+    elif format_type == "date":
+        formatted = format_date(raw)
+    elif format_type == "paragraph":
+        formatted = format_plain(raw)
+        indexing = "1.0"
+    else:
+        raise ValueError(f"Unrecognized format type for {entry}")
+
+    entry.delete(indexing, tk.END)
+    entry.insert(indexing, formatted)
+
+
+def load_documents() -> dict[str, Callable[[], None]]:
+    """Load the modules in the documents/ directory"""
+
+    documents: dict[str, Callable[[], None]] = {}
+
+    for module_info in pkgutil.iter_modules(docgen.documents.__path__):
+        module = importlib.import_module(
+            f"{docgen.documents.__name__}.{module_info.name}"
+        )
+
+        if hasattr(module, "main"):
+            display_name = getattr(
+                module,
+                "DISPLAY_NAME",
+                module_info.name.replace("_", " ").title(),
+            )
+
+            documents[display_name] = module.main
+
+    return documents
+
+
+def open_pdf(pdf_path: Path) -> None:
+    """Open PDF according to the platform"""
+
+    system: str = platform.system()
+
+    if system == "Darwin":
+        subprocess.run(["open", str(pdf_path)], check=True)
+
+    elif system == "Windows":
+        subprocess.run(
+            ["cmd", "/c", "start", "", str(pdf_path)],
+            check=True,
+        )
+
+    elif system == "Linux":
+        subprocess.run(["xdg-open", str(pdf_path)], check=True)
 
 
 def find_xelatex() -> Path:

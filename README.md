@@ -12,9 +12,9 @@
 ![ty](https://img.shields.io/badge/ty-261230?logo=ty&logoColor=white)
 ![Ruff](https://img.shields.io/badge/ruff-D7FF64?logo=ruff&logoColor=black)
 ![GNU Make](https://img.shields.io/badge/GNU%20Make-A42E2B?logo=gnu&logoColor=white)
-![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
+<!-- ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D4?logo=windows)
-<!-- ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) -->
+![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) -->
 
 
 A simple application for generating PDF documents from LaTeX templates.
@@ -52,7 +52,7 @@ The application separates document-generation logic from company-specific config
 
 Clone the repository
 ```bash
-git clone https://github.com/<username>/docgen.git
+git clone https://github.com/camden-white/DocGen.git
 cd docgen
 ```
 

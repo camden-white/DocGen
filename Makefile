@@ -89,9 +89,17 @@ bump: check
 		exit 1; \
 	fi; \
 	old_version="$$(uv version --short)" && \
+	new_version="$$(uv version --bump $(BUMP) --dry-run --short)" && \
+	printf "Are you sure you want to bump the version from v%s to v%s? (Y/n) " \
+		"$$old_version" "$$new_version"; \
+	read -r answer; \
+	case "$$answer" in \
+		""|y|Y|yes|Yes|YES) ;; \
+		n|N|no|No|NO) echo "Version bump cancelled."; exit 0 ;; \
+		*) echo "Invalid response."; exit 1 ;; \
+	esac; \
 	echo "Bumping $(BUMP) version..." && \
 	uv version --bump $(BUMP) && \
-	new_version="$$(uv version --short)" && \
 	git add pyproject.toml uv.lock && \
 	echo "Committing version $$new_version..." && \
 	git commit -m "Bump version to $$new_version" && \

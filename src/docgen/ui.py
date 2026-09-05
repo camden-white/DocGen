@@ -6,7 +6,7 @@ from functools import partial
 from tkinter import ttk
 
 from docgen.config import ICON_PATH
-from docgen.utils import snap
+from docgen.utils import Textbox, snap
 
 
 def window(title: str = "", size: tuple[float, float] = (0.5, 0.5)) -> tk.Tk:
@@ -41,8 +41,9 @@ def form_window(
     formats: dict[str, str] | None = None,
     dropdowns: dict[str, tuple[str, ...]] | None = None,
     cols: int = 2,
-    size: tuple[float, float] = (0.6, 0.8),
-) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox]]:
+    size: tuple[float, float] = (0.8, 0.8),
+    box_line_height: int = 3,
+) -> tuple[tk.Tk, dict[str, ttk.Entry | ttk.Combobox | Textbox]]:
     """Document form window"""
 
     if formats is None:
@@ -102,7 +103,7 @@ def form_window(
 
     form.bind(
         "<Configure>",
-        lambda event: canvas.configure(
+        lambda _: canvas.configure(
             scrollregion=canvas.bbox("all"),
         ),
     )
@@ -168,50 +169,89 @@ def form_window(
             add="+",
         )
 
-    entries: dict[str, ttk.Entry | ttk.Combobox] = {}
+    entries: dict[str, ttk.Entry | ttk.Combobox | Textbox] = {}
 
-    max_row = (len(fields) + cols - 1) // cols
+    column_frames: list[ttk.Frame] = []
+    column_rows = [0] * cols
 
-    for col in range(cols):
-        form.columnconfigure(
-            2 * col + 1,
+    field_heights = {
+        field: box_line_height if formats.get(field) == "paragraph" else 1
+        for field in fields
+    }
+
+    remaining_height = sum(field_heights.values())
+
+    col = 0
+    current_height = 0
+
+    for _ in range(cols):
+        column = ttk.Frame(form)
+        column.pack(
+            side="left",
+            fill="both",
+            expand=True,
+            anchor="n",
+        )
+
+        column.columnconfigure(
+            1,
             weight=1,
         )
 
-    for i, field in enumerate(fields):
-        col = i // max_row
-        row = i % max_row
+        column_frames.append(column)
 
-        label_col = 2 * col
-        entry_col = label_col + 1
+    for field in fields:
+        column = column_frames[col]
+        row = column_rows[col]
 
-        widget: ttk.Combobox | ttk.Entry
+        label = ttk.Label(
+            column,
+            text=field,
+        )
+
+        label.grid(
+            row=row,
+            column=0,
+            sticky="nw",
+            padx=(10, 8),
+            pady=8,
+        )
+
+        widget: ttk.Combobox | ttk.Entry | Textbox
 
         if field in dropdowns:
             widget = ttk.Combobox(
-                form,
+                column,
                 values=dropdowns[field],
                 state="readonly",
                 width=30,
             )
 
+        elif formats.get(field) == "paragraph":
+            widget = Textbox(
+                column,
+                width=40,
+                height=box_line_height * 3.1 - 1,
+                wrap="word",
+            )
+
         else:
             widget = ttk.Entry(
-                form,
+                column,
                 width=30,
             )
 
-            widget.bind(
-                "<FocusOut>",
-                partial(
-                    snap,
-                    format_type=formats.get(field),
-                ),
-            )
+        widget.bind(
+            "<FocusOut>",
+            partial(
+                snap,
+                format_type=formats.get(field),
+            ),
+        )
 
         widget.grid(
             row=row,
-            column=entry_col,
+            column=1,
             sticky="ew",
             padx=(0, 25),
             pady=8,
@@ -219,15 +259,16 @@ def form_window(
 
         entries[field] = widget
 
-        ttk.Label(
-            form,
-            text=field,
-        ).grid(
-            row=row,
-            column=label_col,
-            sticky="w",
-            padx=(10, 8),
-            pady=8,
-        )
+        column_rows[col] += 1
+
+        current_height += field_heights[field]
+        remaining_height -= field_heights[field]
+
+        if col < cols - 1:
+            remaining_cols = cols - col - 1
+
+            if current_height >= remaining_height / remaining_cols:
+                col += 1
+                current_height = 0
 
     return root, entries

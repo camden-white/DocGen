@@ -56,6 +56,11 @@ FIELDS: tuple[str, ...] = (
 )
 
 FORMATS: dict[str, str] = {
+    "Concessions": "paragraph",
+    "Contingencies": "paragraph",
+    "Home Warranty": "paragraph",
+    "Inclusions": "paragraph",
+    "Exclusions": "paragraph",
     "Client Names": "name",
     "Counterparty Names": "name",
     "Counterparty Agent Name": "name",
