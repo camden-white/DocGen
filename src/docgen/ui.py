@@ -4,9 +4,21 @@ import platform
 import tkinter as tk
 from functools import partial
 from tkinter import ttk
+from typing import Any
 
 from .config import ICON_PATH
-from .utils import Textbox, snap
+from .utils import snap
+
+
+class Textbox(tk.Text):
+    """Tall text box with similar behavior to tk.Entry"""
+
+    def get(self, index1: Any = None, index2: Any = None) -> str:
+        if index1 is None:
+            index1 = "1.0"
+            index2 = "end-1c"
+
+        return super().get(index1=index1, index2=index2)
 
 
 def window(title: str = "", size: tuple[float, float] = (0.5, 0.5)) -> tk.Tk:
