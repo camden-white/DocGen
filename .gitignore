@@ -18,7 +18,7 @@ config.toml
 logo.png
 
 # LaTeX generated files
-**/*.aux
-**/*.log
-**/*.pdf
-**/*.gz
+*.aux
+*.log
+*.pdf
+*.gz

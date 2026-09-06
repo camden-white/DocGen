@@ -12,8 +12,9 @@ from pathlib import Path
 from tkinter import ttk
 from typing import Any
 
-import docgen.documents
 from docgen.config import LOGO_PATH
+from docgen.documents import __name__ as document_name
+from docgen.documents import __path__ as document_path
 
 
 class Textbox(tk.Text):
@@ -156,10 +157,8 @@ def load_documents() -> dict[str, Callable[[], None]]:
 
     documents: dict[str, Callable[[], None]] = {}
 
-    for module_info in pkgutil.iter_modules(docgen.documents.__path__):
-        module = importlib.import_module(
-            f"{docgen.documents.__name__}.{module_info.name}"
-        )
+    for module_info in pkgutil.iter_modules(document_path):
+        module = importlib.import_module(f"{document_name}.{module_info.name}")
 
         if hasattr(module, "main"):
             display_name = getattr(

@@ -3,7 +3,7 @@
 import subprocess
 from tkinter import messagebox, ttk
 
-from docgen.config import (
+from ..config import (
     AGENTS,
     COMPANY_ADDRESS,
     COMPANY_NAME,
@@ -11,8 +11,12 @@ from docgen.config import (
     OUTPUT_DIR,
     TEMPLATE_DIR,
 )
-from docgen.ui import form_window
-from docgen.utils import compile_pdf, open_pdf, render_latex
+from ..ui import form_window
+from ..utils import (
+    compile_pdf,
+    open_pdf,
+    render_latex,
+)
 
 DISPLAY_NAME = "Transaction Worksheet"
 

@@ -10,11 +10,15 @@
 	lint lint-fix format-check format type type-fix \
 	check fix run build run-build clean-build
 
-PKG := src/docgen
-TEMPLATES := $(PKG)/templates
-EXAMPLES := $(PKG)/examples
 APP := DocGen
-ASSETS := $(PKG)/assets
+PKG_MODULE := docgen
+TEMPLATES_MODULE := templates
+EXAMPLES_MODULE := examples
+ASSETS_MODULE := assets
+PKG := src/$(PKG_MODULE)
+TEMPLATES := $(PKG)/$(TEMPLATES_MODULE)
+EXAMPLES := $(PKG)/$(EXAMPLES_MODULE)
+ASSETS := $(PKG)/$(ASSETS_MODULE)
 
 RUN := uv run
 RUFF := $(RUN) ruff
@@ -90,7 +94,7 @@ bump: check
 	fi; \
 	old_version="$$(uv version --short)" && \
 	new_version="$$(uv version --bump $(BUMP) --dry-run --short)" && \
-	printf "Are you sure you want to bump the version from v%s to v%s? (Y/n) " \
+	printf "Do you want to proceed bumping v%s => v%s? [y/n]\n" \
 		"$$old_version" "$$new_version"; \
 	read -r answer; \
 	case "$$answer" in \
@@ -103,9 +107,9 @@ bump: check
 	git add pyproject.toml uv.lock && \
 	echo "Committing version $$new_version..." && \
 	git commit -m "Bump version to $$new_version" && \
-	git tag -a "v$$new_version" -m "DocGen v$$new_version" && \
+	git tag -a "v$$new_version" -m "$(APP) v$$new_version" && \
 	git push --follow-tags && \
-	echo "Bumped version $$old_version -> $$new_version"
+	echo "Bumped version $$old_version => $$new_version."
 
 # check types
 type:
@@ -165,20 +169,20 @@ fix:
 
 # run application
 run:
-	echo "Running DocGen application..."
-	$(RUN) docgen
+	echo "Running $(APP) application..."
+	$(RUN) $(PKG_MODULE)
 
 # build application
 build:
-	echo "Building DocGen application..."
+	echo "Building $(APP) application..."
 	$(RUN) pyinstaller \
 		--name $(APP) \
 		--windowed \
 		--onedir \
-		--icon "$(ASSETS)/docgen.icns" \
-		--add-data "$(ASSETS):docgen/assets" \
-		--add-data "$(TEMPLATES):docgen/templates" \
-		--collect-submodules docgen.documents \
+		--icon "$(ASSETS)/$(PKG_MODULE).icns" \
+		--add-data "$(ASSETS):$(PKG_MODULE)/$(ASSETS_MODULE)" \
+		--add-data "$(TEMPLATES):$(PKG_MODULE)/$(TEMPLATES_MODULE)" \
+		--collect-submodules $(PKG_MODULE).documents \
 		$(PKG)/main.py
 	cp $(EXAMPLES)/config.example.toml dist/config.toml
 	cp $(EXAMPLES)/logo.example.png dist/logo.png
@@ -189,10 +193,10 @@ run-build:
 		echo "Build not found. Run 'make build' first."; \
 		exit 1; \
 	fi; \
-	echo "Running built DocGen application..."; \
+	echo "Running built $(APP) application..."; \
 	open "dist/$(APP).app"
 
 # clean build artifacts
 clean-build:
-	echo "Cleaning build artifacts..."
+	echo "Cleaning $(APP) build artifacts..."
 	rm -rf build dist $(APP).spec

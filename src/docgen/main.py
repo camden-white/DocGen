@@ -2,8 +2,7 @@
 
 from tkinter import ttk
 
-from docgen.ui import window
-from docgen.utils import load_documents
+from docgen import load_documents, window
 
 
 def main() -> None:
