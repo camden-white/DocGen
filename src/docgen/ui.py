@@ -5,8 +5,8 @@ import tkinter as tk
 from functools import partial
 from tkinter import ttk
 
-from docgen.config import ICON_PATH
-from docgen.utils import Textbox, snap
+from .config import ICON_PATH
+from .utils import Textbox, snap
 
 
 def window(title: str = "", size: tuple[float, float] = (0.5, 0.5)) -> tk.Tk:

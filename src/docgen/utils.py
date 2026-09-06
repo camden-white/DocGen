@@ -12,9 +12,9 @@ from pathlib import Path
 from tkinter import ttk
 from typing import Any
 
-from docgen.config import LOGO_PATH
-from docgen.documents import __name__ as document_name
-from docgen.documents import __path__ as document_path
+from .config import LOGO_PATH
+from .documents import __name__ as document_name
+from .documents import __path__ as document_path
 
 
 class Textbox(tk.Text):
