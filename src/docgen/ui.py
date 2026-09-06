@@ -4,10 +4,13 @@ import platform
 import tkinter as tk
 from functools import partial
 from tkinter import ttk
-from typing import Any
+from typing import TYPE_CHECKING
 
 from .config import ICON_PATH
-from .utils import snap
+from .utils import formatting
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
 class Textbox(tk.Text):
@@ -19,6 +22,27 @@ class Textbox(tk.Text):
             index2 = "end-1c"
 
         return super().get(index1=index1, index2=index2)
+
+
+def snap(event: tk.Event[ttk.Entry | Textbox], format_type: str | None = None) -> None:
+    """Snap an event to it's proper formatting"""
+
+    entry = event.widget
+    raw = entry.get().strip()
+
+    if not raw:
+        return
+
+    indexing: str | int
+    if format_type == "paragraph":
+        indexing = "1.0"
+    else:
+        indexing = 0
+
+    formatted = formatting(string=raw, format_type=format_type)
+
+    entry.delete(indexing, tk.END)
+    entry.insert(indexing, formatted)
 
 
 def window(title: str = "", size: tuple[float, float] = (0.5, 0.5)) -> tk.Tk:

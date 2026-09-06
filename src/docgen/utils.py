@@ -6,15 +6,15 @@ import platform
 import shutil
 import subprocess
 import tempfile
-import tkinter as tk
-from collections.abc import Callable
 from pathlib import Path
-from tkinter import ttk
+from typing import TYPE_CHECKING
 
 from .config import LOGO_PATH
 from .documents import __name__ as document_name
 from .documents import __path__ as document_path
-from .ui import Textbox
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 def collapse_spaces(string: str) -> str:
@@ -88,6 +88,28 @@ def format_plain(string: str) -> str:
     return formatted
 
 
+def formatting(string: str, format_type: str | None = None) -> str:
+    """Format text in specific way"""
+    if format_type is None:
+        formatted = format_plain(string)
+    elif format_type == "name":
+        formatted = format_name(string)
+    elif format_type == "phone":
+        formatted = format_phone(string)
+    elif format_type == "email":
+        formatted = format_email(string)
+    elif format_type == "money":
+        formatted = format_money(string)
+    elif format_type == "date":
+        formatted = format_date(string)
+    elif format_type == "paragraph":
+        formatted = format_plain(string)
+    else:
+        raise ValueError(f"Unrecognized format type '{format_type}'")
+
+    return formatted
+
+
 def escape_latex(string: str) -> str:
     """Escape special characters that would be non-strings in LaTeX."""
 
@@ -106,39 +128,6 @@ def escape_latex(string: str) -> str:
     for source, replacement in replacements:
         string = string.replace(source, replacement)
     return string
-
-
-def snap(event: tk.Event[ttk.Entry | Textbox], format_type: str | None) -> None:
-    """Snap an event to it's proper formatting"""
-
-    entry = event.widget
-    raw = entry.get().strip()
-
-    if not raw:
-        return
-
-    indexing: str | int = 0
-
-    if format_type is None:
-        formatted = format_plain(raw)
-    elif format_type == "name":
-        formatted = format_name(raw)
-    elif format_type == "phone":
-        formatted = format_phone(raw)
-    elif format_type == "email":
-        formatted = format_email(raw)
-    elif format_type == "money":
-        formatted = format_money(raw)
-    elif format_type == "date":
-        formatted = format_date(raw)
-    elif format_type == "paragraph":
-        formatted = format_plain(raw)
-        indexing = "1.0"
-    else:
-        raise ValueError(f"Unrecognized format type for {entry}")
-
-    entry.delete(indexing, tk.END)
-    entry.insert(indexing, formatted)
 
 
 def load_documents() -> dict[str, Callable[[], None]]:

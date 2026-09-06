@@ -2,7 +2,7 @@
 
 from importlib.metadata import PackageNotFoundError, version
 
-from .ui import Textbox, form_window, window
+from .ui import form_window, window
 from .utils import load_documents
 
 try:
@@ -11,7 +11,6 @@ except PackageNotFoundError:
     __version__ = "unknown"
 
 __all__ = [
-    "Textbox",
     "__version__",
     "form_window",
     "load_documents",
