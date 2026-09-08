@@ -7,21 +7,71 @@ authors = [
     { name = "Camden White", email = "camdenrenn@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "platformdirs>=4.11.7",
+    "pypdf>=6.17.0",
+    "tomlkit>=0.15.1",
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 
 [project.scripts]
 docgen = "docgen.main:main"
 
 [build-system]
-requires = ["uv_build>=0.12.3,<0.13.0"]
+requires = ["uv_build>=0.12.10,<0.13.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "mypy>=2.3.0",
     "pyinstaller>=6.22.2",
+    "pyright>=1.1.411",
+    "pytest>=9.1.1",
     "ruff>=0.16.6",
     "ty>=0.0.78",
 ]
 
+[tool.uv]
+required-version = ">=0.12.10,<0.13.0"
+
+[tool.uv.build-backend]
+# Private files remain excluded even when they exist in a developer's checkout.
+source-exclude = ["config.toml", "logo.png", ".DS_Store"]
+source-include = ["tests/**", "scripts/**", "Makefile", "uv.lock", ".python-version"]
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "SIM", "RUF"]
+
+[tool.ty.src]
+include = ["src", "scripts", "tests"]
+
+[tool.ty.environment]
+python-version = "3.14"
+
+[tool.ty.terminal]
+error-on-warning = true
+
 [tool.pyright]
-useLibraryCodeForTypes = true
+include = ["src", "scripts", "tests"]
+extraPaths = ["src"]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
+# Regression tests intentionally exercise internal helpers and worker state.
+executionEnvironments = [{ root = "tests", reportPrivateUsage = false }]
+
+[tool.mypy]
+files = ["src", "scripts", "tests"]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+python_version = "3.14"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--import-mode=importlib", "--strict-markers", "--strict-config"]
+markers = [
+    "integration: requires XeLaTeX and its packages/fonts",
+    "gui: requires a graphical display and working Tk installation",
+]

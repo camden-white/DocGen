@@ -5,13 +5,18 @@ build/
 dist/
 wheels/
 *.egg-info
-*.spec
+release/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.DS_Store
 
 # Virtual environments
 .venv
 
 # Outputs
 output/
+*.docgen.json
 
 # Company-specific Data
 config.toml

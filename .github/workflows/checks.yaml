@@ -1,0 +1,47 @@
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Select Python with Tk support
+        id: python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.14.7"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.10"
+          enable-cache: true
+      - name: Install PDF and display dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            texlive-xetex texlive-latex-extra texlive-fonts-recommended \
+            fonts-texgyre xvfb xauth tk
+      - name: Install the locked environment with the selected interpreter
+        env:
+          UV_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: uv sync --locked --no-python-downloads
+      - name: Static checks and unit tests
+        run: make check
+      - name: GUI and real PDF integration tests
+        env:
+          DOCGEN_RUN_GUI: "1"
+          DOCGEN_REQUIRE_PDF_TESTS: "1"
+        run: xvfb-run -a uv run --locked pytest -m "integration or gui"
+      - name: Verify installed artifacts, UI, and template compilation
+        run: xvfb-run -a uv run --locked python scripts/check_package.py --gui --pdf

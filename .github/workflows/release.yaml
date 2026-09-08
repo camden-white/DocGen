@@ -2,118 +2,100 @@ name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    tags: ["v*"]
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  checks:
+    uses: ./.github/workflows/checks.yaml
 
+  build:
+    name: Build ${{ matrix.os }}
+    needs: checks
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          persist-credentials: false
+      - name: Select Python with Tk support
+        id: python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.14.7"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.12.10"
           enable-cache: true
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Build DocGen
-        run: >
-          uv run pyinstaller
-          --name DocGen
-          --windowed
-          --onedir
-          --icon "src/docgen/assets/docgen.ico"
-          --add-data "src/docgen/assets:docgen/assets"
-          --add-data "src/docgen/templates:docgen/templates"
-          --collect-submodules docgen.documents
-          src/docgen/main.py
-
-      - name: Package release
-        shell: pwsh
+      - name: Install the locked environment with the selected interpreter
+        env:
+          UV_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: uv sync --locked --no-python-downloads
+      - name: Verify the release tag
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: uv run --locked python scripts/release.py verify-tag "$RELEASE_TAG"
+      - name: Platform unit and GUI tests
+        env:
+          DOCGEN_RUN_GUI: "1"
+        run: uv run --locked pytest -m "not integration"
+      - name: Verify clean wheel installation and Tk
+        run: uv run --locked python scripts/check_package.py --gui
+      - name: Build application
+        run: uv run --locked python scripts/build_app.py
+      - name: Smoke-test the frozen application
+        run: >-
+          uv run --locked python -c
+          "import subprocess; from scripts.build_app import app_path;
+          subprocess.run([str(app_path()), '--smoke-test'], check=True, timeout=60)"
+      - name: Archive and audit release
         run: |
-          Copy-Item `
-            src/docgen/examples/config.example.toml `
-            dist/DocGen/config.toml
+          uv run --locked python scripts/build_app.py --archive
+          uv run --locked python scripts/check_artifacts.py release/*.zip
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: DocGen-${{ matrix.os }}
+          path: release/*.zip
+          if-no-files-found: error
+          retention-days: 7
 
-          Copy-Item `
-            src/docgen/examples/logo.example.png `
-            dist/DocGen/logo.png
-
-          Compress-Archive `
-            -Path dist/DocGen `
-            -DestinationPath "DocGen-${{ github.ref_name }}-Windows.zip"
-
-      - name: Create GitHub release
-        shell: pwsh
+  publish:
+    name: Publish both platform builds
+    needs: [checks, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: DocGen-*
+          path: release
+          merge-multiple: true
+      - name: Publish completed release
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          gh release create "${{ github.ref_name }}" `
-            "DocGen-${{ github.ref_name }}-Windows.zip" `
-            --verify-tag `
-            --generate-notes `
-            --title "DocGen ${{ github.ref_name }}"
-
-  build-macos:
-    needs: build-windows
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
-        with:
-          enable-cache: true
-
-      - name: Install Tkinter
-        run: brew install python-tk@3.14
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Verify Tkinter
-        run: |
-          uv run python -c "import tkinter; print('Tk version:', tkinter.TkVersion)"
-
-      - name: Build DocGen
-        run: >
-          uv run pyinstaller
-          --name DocGen
-          --windowed
-          --onedir
-          --icon "src/docgen/assets/docgen.icns"
-          --add-data "src/docgen/assets:docgen/assets"
-          --add-data "src/docgen/templates:docgen/templates"
-          --collect-submodules docgen.documents
-          src/docgen/main.py
-
-      - name: Package release
-        run: |
-          mkdir -p release/DocGen
-
-          cp -R dist/DocGen.app release/DocGen/
-          cp src/docgen/examples/config.example.toml release/DocGen/config.toml
-          cp src/docgen/examples/logo.example.png release/DocGen/logo.png
-
-          ditto -c -k \
-            --sequesterRsrc \
-            --keepParent \
-            release/DocGen \
-            "DocGen-${{ github.ref_name }}-macOS-arm64.zip"
-
-      - name: Add macOS build to GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release upload "${{ github.ref_name }}" \
-            "DocGen-${{ github.ref_name }}-macOS-arm64.zip"
+          shopt -s nullglob
+          artifacts=(release/*.zip)
+          if [ "${#artifacts[@]}" -ne 2 ]; then
+            echo "Expected exactly two validated platform archives."
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" "${artifacts[@]}" \
+            --verify-tag --generate-notes --title "DocGen $RELEASE_TAG"

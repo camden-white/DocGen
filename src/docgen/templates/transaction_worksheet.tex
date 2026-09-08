@@ -11,10 +11,7 @@
 \usepackage{fontspec}
 \usepackage{graphicx}
 \usepackage{xcolor}
-\usepackage{array}
-\usepackage{tabularx}
 \usepackage{etoolbox}
-\usepackage{adjustbox}
 
 \newcommand{\agentsize}{17bp}
 \newcommand{\agentspacing}{19bp}
@@ -25,96 +22,77 @@
 \newcommand{\sectionsize}{12bp}
 \newcommand{\sectionspacing}{14bp}
 
-\newcommand{\textsize}{12bp}
-\newcommand{\textspacing}{14bp}
-
-\newcommand{\maxbodylineheight}{12mm}
+\newlength{\WorksheetColumnHeight}
 
 % ================================================================
 % EDITABLE FIELDS
 % ================================================================
 
 % Header and brokerage
-\newcommand{\LogoPath}{../logo.png}
-\newcommand{\AgentName}{@@AGENTNAME@@}
-\newcommand{\BrokerageName}{@@BROKERAGENAME@@}
-\newcommand{\BrokerageAddress}{@@BROKERAGEADDRESS@@}
-\newcommand{\AgentPhone}{@@AGENTPHONE@@}
-\newcommand{\AgentEmail}{@@AGENTEMAIL@@}
+\newcommand{\LogoPath}{logo.png}
+\newcommand{\AgentName}{@@agent_name@@}
+\newcommand{\BrokerageName}{@@brokerage_name@@}
+\newcommand{\BrokerageAddress}{@@brokerage_address@@}
+\newcommand{\AgentPhone}{@@agent_phone@@}
+\newcommand{\AgentEmail}{@@agent_email@@}
 
 % Property
-\newcommand{\PropertyStreet}{@@PROPERTYSTREET@@}
-\newcommand{\CityStateZip}{@@CITYSTATEZIP@@}
+\newcommand{\PropertyStreet}{@@property_street@@}
+\newcommand{\CityStateZip}{@@city_state_zip@@}
 
 % Acceptance and deadlines
-\newcommand{\PurchasePrice}{@@PURCHASEPRICE@@}
-\newcommand{\DateAccepted}{@@DATEACCEPTED@@}
-\newcommand{\EarnestMoney}{@@EARNESTMONEY@@}
-\newcommand{\EarnestMoneyDueDate}{@@EARNESTMONEYDUEDATE@@}
-\newcommand{\InspectionDeadline}{@@INSPECTIONDEADLINE@@}
-\newcommand{\ClosingDate}{@@CLOSINGDATE@@}
-\newcommand{\PossessionDate}{@@POSSESSIONDATE@@}
+\newcommand{\PurchasePrice}{@@purchase_price@@}
+\newcommand{\DateAccepted}{@@date_accepted@@}
+\newcommand{\EarnestMoney}{@@earnest_money@@}
+\newcommand{\EarnestMoneyDueDate}{@@earnest_money_due_date@@}
+\newcommand{\InspectionDeadline}{@@inspection_deadline@@}
+\newcommand{\ClosingDate}{@@closing_date@@}
+\newcommand{\PossessionDate}{@@possession_date@@}
 
 % Terms
-\newcommand{\Concessions}{@@CONCESSIONS@@}
-\newcommand{\Contingencies}{@@CONTINGENCIES@@}
-\newcommand{\HomeWarranty}{@@HOMEWARRANTY@@}
-\newcommand{\Inclusions}{@@INCLUSIONS@@}
-\newcommand{\Exclusions}{@@EXCLUSIONS@@}
+\newcommand{\Concessions}{@@concessions@@}
+\newcommand{\Contingencies}{@@contingencies@@}
+\newcommand{\HomeWarranty}{@@home_warranty@@}
+\newcommand{\Inclusions}{@@inclusions@@}
+\newcommand{\Exclusions}{@@exclusions@@}
 
 % Client
-\newcommand{\ClientType}{@@CLIENTTYPE@@}
-\newcommand{\ClientNames}{@@CLIENTNAMES@@}
-\newcommand{\ClientPhone}{@@CLIENTPHONE@@}
-\newcommand{\ClientEmail}{@@CLIENTEMAIL@@}
+\newcommand{\ClientType}{@@client_type@@}
+\newcommand{\ClientNames}{@@client_names@@}
+\newcommand{\ClientPhone}{@@client_phone@@}
+\newcommand{\ClientEmail}{@@client_email@@}
 
 % Counterparty
-\newcommand{\CounterpartyType}{@@COUNTERPARTYTYPE@@}
-\newcommand{\CounterpartyNames}{@@COUNTERPARTYNAMES@@}
+\newcommand{\CounterpartyType}{@@counterparty_type@@}
+\newcommand{\CounterpartyNames}{@@counterparty_names@@}
 
 % Counterparty Agent
-\newcommand{\CounterpartyAgentName}{@@COUNTERPARTYAGENTNAME@@}
-\newcommand{\CounterpartyAgentCompany}{@@COUNTERPARTYAGENTCOMPANY@@}
-\newcommand{\CounterpartyAgentPhone}{@@COUNTERPARTYAGENTPHONE@@}
-\newcommand{\CounterpartyAgentEmail}{@@COUNTERPARTYAGENTEMAIL@@}
+\newcommand{\CounterpartyAgentName}{@@counterparty_agent_name@@}
+\newcommand{\CounterpartyAgentCompany}{@@counterparty_agent_company@@}
+\newcommand{\CounterpartyAgentPhone}{@@counterparty_agent_phone@@}
+\newcommand{\CounterpartyAgentEmail}{@@counterparty_agent_email@@}
 
 % Lender
-\newcommand{\LenderName}{@@LENDERNAME@@}
-\newcommand{\LenderCompany}{@@LENDERCOMPANY@@}
-\newcommand{\LenderPhone}{@@LENDERPHONE@@}
-\newcommand{\LenderEmail}{@@LENDEREMAIL@@}
-\newcommand{\FinancingType}{@@FINANCINGTYPE@@}
+\newcommand{\LenderName}{@@lender_name@@}
+\newcommand{\LenderCompany}{@@lender_company@@}
+\newcommand{\LenderPhone}{@@lender_phone@@}
+\newcommand{\LenderEmail}{@@lender_email@@}
+\newcommand{\FinancingType}{@@financing_type@@}
 
 % Escrow
-\newcommand{\EscrowContactName}{@@ESCROWCONTACTNAME@@}
-\newcommand{\EscrowCompany}{@@ESCROWCOMPANY@@}
-\newcommand{\EscrowPhone}{@@ESCROWPHONE@@}
-\newcommand{\EscrowEmail}{@@ESCROWEMAIL@@}
+\newcommand{\EscrowContactName}{@@escrow_contact_name@@}
+\newcommand{\EscrowCompany}{@@escrow_company@@}
+\newcommand{\EscrowPhone}{@@escrow_phone@@}
+\newcommand{\EscrowEmail}{@@escrow_email@@}
 
 % ================================================================
 % TYPOGRAPHY AND DESIGN
 % ================================================================
 
-\IfFileExists{/Applications/Microsoft Excel.app/Contents/Resources/DFonts/Aptos.ttf}{%
-  \newfontfamily\Aptos[
-    Path=/Applications/Microsoft Excel.app/Contents/Resources/DFonts/,
-    UprightFont=Aptos.ttf,
-    BoldFont=Aptos-Bold.ttf
-  ]{Aptos}
-  \newfontfamily\AptosNarrow[
-    Path=/Applications/Microsoft Excel.app/Contents/Resources/DFonts/,
-    UprightFont=Aptos-Narrow.ttf,
-    BoldFont=Aptos-Narrow-Bold.ttf
-  ]{Aptos Narrow}
-  \newfontfamily\AptosExtraBold[
-    Path=/Applications/Microsoft Excel.app/Contents/Resources/DFonts/,
-    UprightFont=Aptos-ExtraBold.ttf
-  ]{Aptos ExtraBold}
-}{%
-  \newfontfamily\Aptos{Arial}
-  \newfontfamily\AptosNarrow{Arial Narrow}
-  \newfontfamily\AptosExtraBold{Arial Black}
-}
+% TeX Gyre Heros ships with TeX Live/MacTeX and is available in MiKTeX.
+% Font filenames are resolved by TeX, without OS-specific installed fonts.
+\newfontfamily\DocFont[BoldFont=texgyreheros-bold.otf]{texgyreheros-regular.otf}
+\newfontfamily\HeaderFont{texgyreheros-bold.otf}
 
 \definecolor{ParamountBlue}{RGB}{132,175,212}
 
@@ -122,101 +100,164 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0pt}
 \setlength{\fboxsep}{0pt}
-\Aptos
+\DocFont
 
 \newcommand{\SectionHeading}[1]{%
   \par\addvspace{0.95\baselineskip}%
-  {\Aptos\bfseries\fontsize{\sectionsize}{\sectionspacing}\selectfont\MakeUppercase{#1}\par}%
+  {\DocFont\bfseries\fontsize{\sectionsize}{\sectionspacing}\selectfont\MakeUppercase{#1}\par}%
   % \vspace{1.2bp}%
   {\color{ParamountBlue}\rule{\linewidth}{1.8bp}\par}%
   \vspace{3.2bp}%
 }
 
+% Use the actual label/value widths rather than rigid table column fractions.
+\newsavebox{\FieldLabelBox}
+\newsavebox{\FieldValueBox}
 \newcommand{\FieldRow}[2]{%
   \vspace{6bp}%
-  \noindent
-  \begin{tabularx}{\linewidth}{%
-    @{}>{\raggedright\arraybackslash\Aptos\fontsize{\textsize}{\textspacing}\selectfont}X%
-    >{\raggedleft\arraybackslash\Aptos\fontsize{\textsize}{\textspacing}\selectfont}p{0.37\linewidth}@{}%
-  }
-  \mbox{\MakeUppercase{#1}} & \mbox{#2}
-  \end{tabularx}\par
+  {\FieldFont
+    \sbox{\FieldLabelBox}{\MakeUppercase{#1}}%
+    \sbox{\FieldValueBox}{#2}%
+    \ifdim\dimexpr\wd\FieldLabelBox+\wd\FieldValueBox+8bp\relax>\linewidth
+      \noindent\usebox{\FieldLabelBox}\par
+      \noindent\hfill\usebox{\FieldValueBox}\par
+    \else
+      \noindent\usebox{\FieldLabelBox}\hfill\usebox{\FieldValueBox}\par
+    \fi
+  }%
 }
 
 \ExplSyntaxOn
 
-\box_new:N \l__bodyline_box
-\dim_new:N \l__bodyline_width_dim
-\fp_new:N  \l__bodyline_size_fp
+\box_new:N \l__docgen_column_box
+\fp_new:N \l__docgen_body_size_fp
+\fp_new:N \l__docgen_terms_size_fp
+\fp_new:N \l__docgen_terms_low_fp
+\fp_new:N \l__docgen_terms_high_fp
 
-\NewDocumentCommand{\BodyLine}{m}
+% Paragraphs and field rows share the space available to their column; there is
+% no arbitrary per-field height limit. Headings retain their normal size.
+\NewDocumentCommand{\FieldFont}{}
+{
+  \DocFont
+  \fontsize
+    { \fp_to_decimal:N \l__docgen_body_size_fp bp }
+    { \fp_eval:n { 14 / 12 * \l__docgen_body_size_fp } bp }
+  \selectfont
+}
+
+\NewDocumentCommand{\BodyLine}{+m}
 {
   \group_begin:
-
-  % Preserve the current column width
-  \dim_set:Nn \l__bodyline_width_dim { \linewidth }
-
-  % Start at the normal BodyLine font size
-  \fp_set:Nn \l__bodyline_size_fp { 12 }
-
-  % Measure at the current font size
-  \vbox_set:Nn \l__bodyline_box
-  {
-    \hsize = \l__bodyline_width_dim
-    \linewidth = \l__bodyline_width_dim
-
-    \Aptos
-    \fontsize
-      { \fp_to_decimal:N \l__bodyline_size_fp bp }
-      { \fp_eval:n { 1.5 * \l__bodyline_size_fp } bp }
-    \selectfont
-
-    #1\par
-  }
-
-  % Reduce the font until the paragraph fits
-  \dim_while_do:nn
-    {
-      \box_ht:N \l__bodyline_box
-      + \box_dp:N \l__bodyline_box
-      >
-      \maxbodylineheight
-    }
-  {
-    \fp_sub:Nn \l__bodyline_size_fp { 0.1 }
-
-    \vbox_set:Nn \l__bodyline_box
-    {
-      \hsize = \l__bodyline_width_dim
-      \linewidth = \l__bodyline_width_dim
-
-      \Aptos
-      \fontsize
-        { \fp_to_decimal:N \l__bodyline_size_fp bp }
-        { \fp_eval:n { 1.5 * \l__bodyline_size_fp } bp }
-      \selectfont
-
-      #1\par
-    }
-  }
-
-  % Typeset normally at the resulting font size
-  \Aptos
+  \DocFont
   \fontsize
-    { \fp_to_decimal:N \l__bodyline_size_fp bp }
-    { \fp_eval:n { 1.5 * \l__bodyline_size_fp } bp }
+    { \fp_to_decimal:N \l__docgen_body_size_fp bp }
+    { \fp_eval:n { 1.5 * \l__docgen_body_size_fp } bp }
   \selectfont
-
   #1\par
+  \group_end:
+}
 
+\NewDocumentCommand{\TermLine}{+m}
+{
+  \group_begin:
+  \DocFont
+  \fontsize
+    { \fp_to_decimal:N \l__docgen_terms_size_fp bp }
+    { \fp_eval:n { 1.5 * \l__docgen_terms_size_fp } bp }
+  \selectfont
+  #1\par
+  \group_end:
+}
+
+\cs_new_protected:Npn \__docgen_measure_column:n #1
+{
+  \hbox_set:Nn \l__docgen_column_box
+  {
+    % Trial sizes must not leave false overflow warnings in the compiler log.
+    % The final pass below restores normal diagnostics before typesetting.
+    \hfuzz = \maxdimen
+    \hbadness = 10000
+    \begin{minipage}[t]{0.45\textwidth}
+      \vspace{0pt}\raggedright
+      #1
+    \end{minipage}
+  }
+}
+
+\NewDocumentCommand{\FittedColumn}{s m +m}
+{
+  \group_begin:
+  \fp_set:Nn \l__docgen_body_size_fp { 12 }
+  \fp_set:Nn \l__docgen_terms_size_fp { min(12, @@terms_font_ceiling@@) }
+  \__docgen_measure_column:n { #3 }
+  \bool_while_do:nn
+    {
+      \dim_compare_p:n
+        { \box_ht:N \l__docgen_column_box + \box_dp:N \l__docgen_column_box > \WorksheetColumnHeight }
+      && \fp_compare_p:n { \l__docgen_body_size_fp > 9 }
+    }
+  {
+    \fp_sub:Nn \l__docgen_body_size_fp { 0.1 }
+    \fp_set:Nn \l__docgen_terms_size_fp
+      { min(\l__docgen_body_size_fp, @@terms_font_ceiling@@) }
+    \__docgen_measure_column:n { #3 }
+  }
+
+  % Only the starred (terms) column may shrink paragraphs below 9 points.
+  % Halving finds a fitting size quickly; bisection recovers the largest fit.
+  \IfBooleanT{#1}
+  {
+    \dim_compare:nNnT
+      { \box_ht:N \l__docgen_column_box + \box_dp:N \l__docgen_column_box }
+      > { \WorksheetColumnHeight }
+    {
+      \fp_set_eq:NN \l__docgen_terms_high_fp \l__docgen_terms_size_fp
+      \bool_while_do:nn
+      {
+        \dim_compare_p:n
+          { \box_ht:N \l__docgen_column_box + \box_dp:N \l__docgen_column_box > \WorksheetColumnHeight }
+        && \dim_compare_p:n
+          { \fp_to_decimal:N \l__docgen_terms_size_fp bp > 1sp }
+      }
+      {
+        % One scaled point is TeX's numeric resolution, not a readability floor.
+        \fp_set:Nn \l__docgen_terms_size_fp { \l__docgen_terms_size_fp / 2 }
+        \__docgen_measure_column:n { #3 }
+      }
+      \fp_set_eq:NN \l__docgen_terms_low_fp \l__docgen_terms_size_fp
+      \prg_replicate:nn { 12 }
+      {
+        \fp_set:Nn \l__docgen_terms_size_fp
+          { (\l__docgen_terms_low_fp + \l__docgen_terms_high_fp) / 2 }
+        \__docgen_measure_column:n { #3 }
+        \dim_compare:nNnTF
+          { \box_ht:N \l__docgen_column_box + \box_dp:N \l__docgen_column_box }
+          > { \WorksheetColumnHeight }
+          { \fp_set_eq:NN \l__docgen_terms_high_fp \l__docgen_terms_size_fp }
+          { \fp_set_eq:NN \l__docgen_terms_low_fp \l__docgen_terms_size_fp }
+      }
+      \fp_set_eq:NN \l__docgen_terms_size_fp \l__docgen_terms_low_fp
+      \__docgen_measure_column:n { #3 }
+    }
+  }
+  \dim_compare:nNnT
+    { \box_ht:N \l__docgen_column_box + \box_dp:N \l__docgen_column_box }
+    > { \WorksheetColumnHeight }
+    {
+      \typeout{DOCGEN_LAYOUT_ERROR:~#2}
+      \PackageError{docgen}{Column~exceeds~space~at~minimum~font~size}
+        {Shorten~long~fields~in~the~#2~column~and~generate~again.}
+    }
+  \begin{minipage}[t]{0.45\textwidth}
+    \vspace{0pt}\raggedright
+    #3
+  \end{minipage}
   \group_end:
 }
 
 \ExplSyntaxOff
 
-% \newcommand{\BodyLine}[1]{%
-%   {\Aptos\fontsize{\textsize}{\textspacing}\selectfont #1\par}%
-% }
 
 \newcommand{\HeaderBlock}{%
   \colorbox{ParamountBlue}{%
@@ -225,15 +266,15 @@
       \hspace*{11bp}%
       \begin{minipage}[c]{0.2\linewidth}
         \centering
-        \includegraphics[width=105bp]{\LogoPath}
+        \includegraphics[width=\linewidth]{\LogoPath}
       \end{minipage}%
       \hfill
       \begin{minipage}[c]{0.66\linewidth}
         \color{white}
-        {\AptosExtraBold\fontsize{\agentsize}{\agentspacing}\selectfont
+        {\HeaderFont\fontsize{\agentsize}{\agentspacing}\selectfont
           \MakeUppercase{\AgentName}\par}
         \vspace{3.5bp}
-        {\Aptos\bfseries\fontsize{10bp}{14bp}\selectfont
+        {\DocFont\bfseries\fontsize{10bp}{14bp}\selectfont
           \MakeUppercase{\BrokerageName}\par
           \BrokerageAddress\par
           \AgentPhone\par
@@ -252,17 +293,18 @@
 \vspace{18bp}
 
 \begin{center}
-  {\Aptos\fontsize{\addresssize}{\addressspacing}\selectfont
+  {\DocFont\fontsize{\addresssize}{\addressspacing}\selectfont
     \PropertyStreet\par
     \CityStateZip\par}
 \end{center}
 
 \vspace{7bp}
 
+% Reserve the normal interline space before the two top-aligned columns.
+\par
+\setlength{\WorksheetColumnHeight}{\dimexpr\pagegoal-\pagetotal-\baselineskip\relax}
 \noindent
-\begin{minipage}[t]{0.45\textwidth}
-  \vspace{0pt}
-  \raggedright
+\FittedColumn*{Acceptance and terms}{%
 
   \SectionHeading{Acceptance}
   \FieldRow{Purchase Price}{\PurchasePrice}
@@ -279,42 +321,40 @@
 
   \SectionHeading{Concessions}
   \ifdefempty{\Concessions}
-  {\BodyLine{None}}
-  {\BodyLine{\Concessions}}
+  {\TermLine{None}}
+  {\TermLine{\Concessions}}
 
   \SectionHeading{Contingencies}
   \ifdefempty{\Contingencies}
-  {\BodyLine{None}}
-  {\BodyLine{\Contingencies}}
+  {\TermLine{None}}
+  {\TermLine{\Contingencies}}
 
   \SectionHeading{Home Warranty}
   \ifdefempty{\HomeWarranty}
-  {\BodyLine{None}}
-  {\BodyLine{\HomeWarranty}}
+  {\TermLine{None}}
+  {\TermLine{\HomeWarranty}}
 
   \SectionHeading{Inclusions \& Exclusions}
   \ifdefempty{\Inclusions}{
     \ifdefempty{\Exclusions}{
-      \BodyLine{None}
+      \TermLine{None}
     }{
-      \BodyLine{Exclusions: \Exclusions}
+      \TermLine{Exclusions: \Exclusions}
     }
   }{
     \ifdefempty{\Exclusions}{
-      \BodyLine{Inclusions: \Inclusions}
+      \TermLine{Inclusions: \Inclusions}
     }{
-      \BodyLine{
+      \TermLine{
         Inclusions: \Inclusions\\ 
         Exclusions: \Exclusions
       }
     }
   }
 
-\end{minipage}%
+}%
 \hfill
-\begin{minipage}[t]{0.45\textwidth}
-  \vspace{0pt}
-  \raggedright
+\FittedColumn{Contacts and financing}{%
 
   \ifdefempty{\ClientType}
   {\SectionHeading{Buyer Information}}
@@ -350,6 +390,6 @@
   \BodyLine{\EscrowPhone}
   \BodyLine{\EscrowEmail}
 
-\end{minipage}
+}
 
 \end{document}

@@ -1,247 +1,139 @@
-"""Package utilities"""
+"""Pure input formatting and platform file-opening helpers; no Tk dependencies."""
 
-import importlib
-import pkgutil
-import platform
-import shutil
+import os
+import re
 import subprocess
-import tempfile
+import sys
+from collections.abc import Callable
+from datetime import date
+from decimal import ROUND_DOWN, Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-from .config import LOGO_PATH
-from .documents import __name__ as document_name
-from .documents import __path__ as document_path
+from .errors import PdfOpenError
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
+_USD_AMOUNT = re.compile(r"\$?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]{1,2})?")
+_PHONE = re.compile(r"[+()0-9 .-]+")
 
 
 def collapse_spaces(string: str) -> str:
-    """Turn all whitespaces into single spaces"""
-    return (" ").join(string.split())
+    """Collapse whitespace in a single-line field without removing punctuation."""
+    return " ".join(string.split())
 
 
-def letterize(string: str, spaces: bool = False) -> str:
-    """Remove all non-letters with or without spaces"""
-    letters = [
-        letter for letter in string if letter.isalpha() or spaces and letter.isspace()
-    ]
-    formatted = "".join(letters)
-    return formatted
-
-
-def latex_placeholder(string: str, delimiter: str = "@@") -> str:
-    """Turn string into corresponding LaTeX template placeholder"""
-    formatted = delimiter + letterize(string).upper() + delimiter
-    return formatted
-
-
-def format_email(string: str) -> str:
-    """Remove spaces and lower-case"""
-    formatted = string.lower().replace(" ", "")
-    return formatted
-
-
-def digitize(string: str) -> str:
-    """Remove all non-digits"""
-    digits = [d for d in string if d.isdigit()]
-    return "".join(digits)
-
-
-def format_phone(string: str) -> str:
-    """Turn string into digits of the form (123) 456-7890"""
-    digits = digitize(string)
-    formatted = ""
-    if digits:
-        formatted = f"({digits[0:3]}) {digits[3:6]}-{digits[6:10]}"
-    return formatted
+def parse_usd(string: str) -> Decimal:
+    """Parse a nonnegative US dollar amount with at most two decimal places."""
+    text = string.strip()
+    if len(text) > 64 or _USD_AMOUNT.fullmatch(text) is None:
+        raise ValueError("Enter an amount such as 1234 or $1,234.")
+    amount = Decimal(text.removeprefix("$").replace(",", ""))
+    if amount >= Decimal("1e18"):
+        raise ValueError("The amount must be less than 1,000,000,000,000,000,000.")
+    return amount
 
 
 def format_money(string: str) -> str:
-    """Format string into digits of the form $1,234.56"""
-    digits = digitize(string)
-    formatted = ""
-    if digits:
-        formatted = r"$" + f"{int(digits):,}"
-    return formatted
+    """Display whole dollars, discarding any cents without rounding."""
+    if not string.strip():
+        return ""
+    dollars = parse_usd(string).to_integral_value(rounding=ROUND_DOWN)
+    return f"${dollars:,.0f}"
+
+
+def parse_date(string: str) -> date:
+    """Accept explicit YYYY-MM-DD or US M/D/YYYY dates; reject impossible dates."""
+    text = string.strip()
+    try:
+        if re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", text):
+            return date.fromisoformat(text)
+        if re.fullmatch(r"[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}", text):
+            month, day, year = map(int, text.split("/"))
+            return date(year, month, day)
+    except ValueError:
+        pass
+    raise ValueError("Enter a real date as M/D/YYYY or YYYY-MM-DD.")
 
 
 def format_date(string: str) -> str:
-    """Remove non-digits and non-slashes"""
-    clean_string = string.replace("-", "/").replace(" ", "")
-    components = clean_string.split("/")
-    numeric_components = [digitize(c) for c in components]
-    formatted = "/".join(numeric_components)
-    return formatted
+    """Normalize valid dates to MM/DD/YYYY."""
+    if not string.strip():
+        return ""
+    parsed = parse_date(string)
+    return f"{parsed.month:02d}/{parsed.day:02d}/{parsed.year:04d}"
+
+
+def format_phone(string: str) -> str:
+    """Format ten-digit North American numbers, optionally prefixed with +1/1."""
+    text = string.strip()
+    if not text:
+        return ""
+    if _PHONE.fullmatch(text) is None or ("+" in text and not text.startswith("+1")):
+        raise ValueError("Enter a 10-digit phone number, optionally prefixed with +1.")
+    digits = "".join(character for character in text if character in "0123456789")
+    if text.startswith("+") and len(digits) != 11:
+        raise ValueError("A +1 country code must be followed by all 10 phone digits.")
+    if len(digits) == 11 and digits.startswith("1"):
+        digits = digits[1:]
+    if len(digits) != 10 or text.count("+") > 1:
+        raise ValueError("Enter a 10-digit phone number, optionally prefixed with +1.")
+    return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+
+
+def format_email(string: str) -> str:
+    """Validate a simple mailbox address while preserving its local-part case."""
+    text = string.strip()
+    if not text:
+        return ""
+    if re.fullmatch(r"[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+", text) is None:
+        raise ValueError("Enter an email address such as name@example.com.")
+    local, domain = text.rsplit("@", 1)
+    return f"{local}@{domain.lower()}"
 
 
 def format_name(string: str) -> str:
-    """Remove non-letters and turn whitespaces into single spaces"""
-    formatted = collapse_spaces(letterize(string, spaces=True))
-    return formatted
+    """Preserve names, including apostrophes, hyphens, initials, and accents."""
+    return collapse_spaces(string)
 
 
 def format_plain(string: str) -> str:
-    """Plain paragraph formatting"""
-    formatted = collapse_spaces(string)
-    return formatted
+    """Trim outer whitespace while preserving paragraph breaks and indentation."""
+    return string.replace("\r\n", "\n").replace("\r", "\n").strip()
 
 
 def formatting(string: str, format_type: str | None = None) -> str:
-    """Format text in specific way"""
-    if format_type is None:
-        formatted = format_plain(string)
-    elif format_type == "name":
-        formatted = format_name(string)
-    elif format_type == "phone":
-        formatted = format_phone(string)
-    elif format_type == "email":
-        formatted = format_email(string)
-    elif format_type == "money":
-        formatted = format_money(string)
-    elif format_type == "date":
-        formatted = format_date(string)
-    elif format_type == "paragraph":
-        formatted = format_plain(string)
-    else:
-        raise ValueError(f"Unrecognized format type '{format_type}'")
-
-    return formatted
-
-
-def escape_latex(string: str) -> str:
-    """Escape special characters that would be non-strings in LaTeX."""
-
-    replacements = (
-        ("\\", r"\textbackslash{}"),
-        ("&", r"\&"),
-        ("%", r"\%"),
-        ("$", r"\$"),
-        ("#", r"\#"),
-        ("_", r"\_"),
-        ("{", r"\{"),
-        ("}", r"\}"),
-        ("~", r"\textasciitilde{}"),
-        ("^", r"\textasciicircum{}"),
-    )
-    for source, replacement in replacements:
-        string = string.replace(source, replacement)
-    return string
-
-
-def load_documents() -> dict[str, Callable[[], None]]:
-    """Load the modules in the documents/ directory"""
-
-    documents: dict[str, Callable[[], None]] = {}
-
-    for module_info in pkgutil.iter_modules(document_path):
-        module = importlib.import_module(f"{document_name}.{module_info.name}")
-
-        if hasattr(module, "main"):
-            display_name = getattr(
-                module,
-                "DISPLAY_NAME",
-                module_info.name.replace("_", " ").title(),
-            )
-
-            documents[display_name] = module.main
-
-    return documents
+    """Normalize a field or raise ValueError without changing the original input."""
+    formatters: dict[str | None, Callable[[str], str]] = {
+        "name": format_name,
+        "phone": format_phone,
+        "email": format_email,
+        "money": format_money,
+        "date": format_date,
+        "paragraph": format_plain,
+        "text": collapse_spaces,
+        None: collapse_spaces,
+    }
+    try:
+        formatter = formatters[format_type]
+    except KeyError as error:
+        raise ValueError(f"Unrecognized format type {format_type!r}.") from error
+    return formatter(string)
 
 
 def open_pdf(pdf_path: Path) -> None:
-    """Open PDF according to the platform"""
-
-    system: str = platform.system()
-
-    if system == "Darwin":
-        subprocess.run(["open", str(pdf_path)], check=True)
-
-    elif system == "Windows":
-        subprocess.run(
-            ["cmd", "/c", "start", "", str(pdf_path)],
-            check=True,
-        )
-
-    elif system == "Linux":
-        subprocess.run(["xdg-open", str(pdf_path)], check=True)
-
-
-def find_xelatex() -> Path:
-    """Return a working XeLaTeX executable, including the macOS TeX Live path."""
-
-    discovered = shutil.which("xelatex")
-    if discovered:
-        return Path(discovered)
-
-    macos_texlive = Path("/Library/TeX/texbin/xelatex")
-    if macos_texlive.is_file():
-        return macos_texlive
-
-    raise FileNotFoundError(
-        "XeLaTeX was not found. Install a LaTeX distribution "
-        "such as MiKTeX on Windows or MacTeX on macOS."
-    )
-
-
-def render_latex(template: Path, data: dict[str, str]) -> str:
-    """Insert safe values into the LaTeX template."""
-
-    with open(template, "r", encoding="utf-8") as file:
-        latex_template = file.read()
-
-    latex_template = latex_template.replace("../logo.png", LOGO_PATH.as_posix())
-
-    for key, value in data.items():
-        latex_template = latex_template.replace(
-            latex_placeholder(key), escape_latex(value)
-        )
-
-    return latex_template
-
-
-def compile_pdf(latex_source: str, output_pdf: Path) -> None:
-    """Compile LaTeX in an isolated directory and copy out a verified PDF."""
-
-    xelatex = find_xelatex()
-    output_pdf = output_pdf.expanduser().resolve()
-    output_pdf.parent.mkdir(parents=True, exist_ok=True)
-
-    with tempfile.TemporaryDirectory(prefix="transaction-worksheet-") as tmp:
-        build_dir = Path(tmp)
-        tex_path = build_dir / "document.tex"
-        tex_path.write_text(latex_source, encoding="utf-8")
-
-        command = [
-            str(xelatex),
-            "-interaction=nonstopmode",
-            "-halt-on-error",
-            "-file-line-error",
-            "document.tex",
-        ]
-        result = subprocess.run(
-            command,
-            cwd=build_dir,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-
-        built_pdf = build_dir / "document.pdf"
-        if result.returncode != 0 or not built_pdf.is_file():
-            log_path = build_dir / "document.log"
-            log_text = (
-                log_path.read_text(encoding="utf-8", errors="replace")
-                if log_path.is_file()
-                else result.stdout
+    """Ask the OS to open an existing PDF, separately from PDF generation."""
+    path = pdf_path.expanduser().absolute()
+    try:
+        if not path.is_file():
+            raise FileNotFoundError(path)
+        if sys.platform == "win32":
+            os.startfile(path)
+        elif sys.platform in {"darwin", "linux"}:
+            command = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.run(
+                [command, str(path)], check=True, timeout=15, capture_output=True
             )
-            raise RuntimeError(
-                "XeLaTeX compilation failed. Final log lines:\n\n"
-                + "\n".join(log_text.splitlines()[-60:])
-            )
-
-        shutil.copy2(built_pdf, output_pdf)
-
-    if not output_pdf.is_file() or output_pdf.stat().st_size == 0:
-        raise RuntimeError(f"PDF verification failed: {output_pdf}")
+        else:
+            raise OSError("Opening files is not supported on this platform.")
+    except (OSError, subprocess.SubprocessError) as error:
+        raise PdfOpenError(
+            f"The PDF is saved at {path}, but could not be opened."
+        ) from error
