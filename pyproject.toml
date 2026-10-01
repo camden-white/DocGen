@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "platformdirs>=4.11.7",
-    "pypdf>=6.17.0",
+    "pypdf>=6.19.0",
     "tomlkit>=0.15.1",
 ]
 license = "Apache-2.0"
